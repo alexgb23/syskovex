@@ -7,7 +7,7 @@ function About() {
   return (
     <section className="about-section" id="about">
       <div className="container about-container">
-        <div className="about-center sysk-box sysk-edge theme-light">
+        <div className="about-center sysk-box sysk-edge theme-dark">
           <div className="sysk-content">
             <span className="about-kicker">// Sobre mí</span>
 

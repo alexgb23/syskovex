@@ -1,16 +1,32 @@
 import usePageTitle from "../../hooks/usePageTitle";
 import "./About.css";
 
-<section className="about-section" id="about">
+function About() {
+  usePageTitle("About");
+
+  return (
+    <section className="about-section" id="about">
       <div className="container about-container">
-        <div className="about-center">
-          <span className="about-kicker">// Sobre mí</span>
+        <div className="about-center sysk-box sysk-edge theme-light">
+          <div className="sysk-content">
+            <span className="about-kicker">// Sobre mí</span>
 
-          <h1 className="about-title">About</h1>
+            <h1 className="about-title">About</h1>
 
-          <p className="about-text">Esto es una prueba</p>
-
+            <p className="about-text">
+              Alex | <span className="about-brand">Syskovex</span> representa
+              una visión técnica centrada en infraestructura IT, software y
+              automatización. A través de este laboratorio desarrollo y
+              documento arquitecturas reales, entornos Linux, virtualización con
+              Proxmox, redes segmentadas, integraciones inteligentes y
+              soluciones digitales pensadas para evolucionar desde un portfolio
+              profesional hasta una identidad tecnológica sólida.
+            </p>
+          </div>
         </div>
-    </div>
+      </div>
+    </section>
+  );
+}
 
-</section>       
+export default About;

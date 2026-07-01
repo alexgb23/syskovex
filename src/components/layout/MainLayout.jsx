@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Outlet } from "react-router";
-import Navbar from "./Navbar/Navbar";
+// import Navbar from "./Navbar/Navbar";
 
 function MainLayout() {
   const [themeMode, setThemeMode] = useState("system");
@@ -75,9 +75,7 @@ function MainLayout() {
         toggleTheme={toggleTheme}
       /> */}
 
-      <main className="container">
-        <Outlet />
-      </main>
+      <Outlet />
     </>
   );
 }

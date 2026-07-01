@@ -1,14 +1,50 @@
 .heroLanding {
+  position: relative;
+  width: 100%;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
   text-align: center;
   padding: 24px;
+  overflow: clip;
+  isolation: isolate;
+}
+
+.heroLanding::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-color: #070c14;
+  background-image:
+    linear-gradient(rgba(7, 12, 20, 0.68), rgba(7, 12, 20, 0.78)),
+    url("/fondoSiscovex.webp");
+  background-image:
+    linear-gradient(rgba(7, 12, 20, 0.68), rgba(7, 12, 20, 0.78)),
+    image-set(
+      url("/fondoSyskovex.avif") type("image/avif"),
+      url("/fondoSiscovex.webp") type("image/webp")
+    );
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.heroLanding::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0, 193, 255, 0.10), transparent 35%),
+    radial-gradient(circle at 80% 30%, rgba(36, 230, 214, 0.08), transparent 30%);
 }
 
 .heroLanding__content {
-  width: min(900px, 100%);
+  width: min(980px, 100%);
+  margin-inline: auto;
 }
 
 .heroLanding__kicker {
@@ -43,6 +79,14 @@
   font-size: 1.1em;
 }
 
+.heroLanding__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 1.5rem;
+}
+
 .heroLanding__link {
   display: inline-flex;
   align-items: center;
@@ -55,7 +99,10 @@
   text-decoration: none;
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(10px);
-  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
 }
 
 .heroLanding__link:hover {
@@ -64,11 +111,14 @@
   border-color: rgba(125, 211, 199, 0.8);
 }
 
-@media (max-width: 768px) {
-  body {
-    background-attachment: scroll;
-  }
+.heroLanding__link--ghost {
+  color: #d9f3ff;
+  background: rgba(185, 231, 255, 0.08);
+  border: 1px solid rgba(185, 231, 255, 0.22);
+  box-shadow: none;
+}
 
+@media (max-width: 768px) {
   .heroLanding {
     padding: 20px;
   }

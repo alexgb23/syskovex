@@ -14,8 +14,9 @@ function About() {
             <h1 className="about-title">About</h1>
 
             <p className="about-text">
-              Alex | <span className="about-brand">Syskovex</span> representa
-              una visión técnica centrada en infraestructura IT, software y
+              <span className="about-brand">Alex</span> |
+              <span className="about-brand">Syskovex</span> representa una
+              visión técnica centrada en infraestructura IT, software y
               automatización. A través de este laboratorio desarrollo y
               documento arquitecturas reales, entornos Linux, virtualización con
               Proxmox, redes segmentadas, integraciones inteligentes y

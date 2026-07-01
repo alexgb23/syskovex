@@ -25,7 +25,7 @@ function Navbar({ isDarkMode, themeMode, toggleTheme }) {
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={closeMenu}
           >
-            Sobre mí
+            About
           </NavLink>
 
           

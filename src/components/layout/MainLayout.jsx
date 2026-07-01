@@ -69,11 +69,11 @@ function MainLayout() {
         dangerouslySetInnerHTML={{ __html: safeJsonLd }}
       />
 
-      <Navbar
+      {/* <Navbar
         isDarkMode={isDarkMode}
         themeMode={themeMode}
         toggleTheme={toggleTheme}
-      />
+      /> */}
 
       <main className="container">
         <Outlet />

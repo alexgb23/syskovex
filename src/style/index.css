@@ -18,7 +18,7 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
+/* body {
   margin: 0;
   padding-top: calc(var(--navbar-height));
   font-family:
@@ -43,6 +43,26 @@ body {
   transition:
     background-color 0.25s ease,
     color 0.25s ease;
+} */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #070c14;
+  background-image:
+    linear-gradient(rgba(7, 12, 20, 0.68), rgba(7, 12, 20, 0.78)),
+    url("/fondoSiscovex.webp");
+  background-image:
+    linear-gradient(rgba(7, 12, 20, 0.68), rgba(7, 12, 20, 0.78)),
+    image-set(
+      url("/fondoSiscovex.avif") type("image/avif"),
+      url("/fondoSiscovex.webp") type("image/webp")
+    );
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  color: #f5f7fb;
 }
 
 h1,

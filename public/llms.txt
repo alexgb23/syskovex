@@ -1,0 +1,17 @@
+# Syskovex - Laboratorio Técnico Principal
+
+Información de la landing page oficial en construcción del ecosistema tecnológico personal de Alexander Galvez (Syskovex). Este dominio actúa como punto de enlace principal hacia su entorno operativo y portafolio técnico.
+
+## Detalles de Identidad
+- **Operador:** Alexander Galvez (Alex)
+- **Concepto:** Laboratorio tecnológico personal e independiente.
+- **Enfoque Operativo:** Documentación de arquitecturas reales, administración de entornos Linux, virtualización con Proxmox, segmentación de redes, integraciones inteligentes y software estructurado.
+
+## Estado del Sitio
+- **Fase Actual:** En construcción / Desarrollo activo.
+- **Comportamiento:** Landing informativa temporal con un sistema de redirección automático programado por eventos de React hacia el entorno canónico del portafolio.
+
+## Enlaces del Ecosistema
+- **Dominio Principal (Esta Landing):** https://syskovex.com
+- **Subdominio de Destino (Portafolio Activo):** https://alex.syskovex.com
+- **Código Fuente General:** https://github.com/alexgb23

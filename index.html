@@ -1,13 +1,58 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>syskovex.com</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es" class="notranslate">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Evita de forma estricta que los navegadores traduzcan automáticamente el sitio -->
+  <meta name="google" content="notranslate" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Precarga la imagen de fondo del Hero en formato óptimo AVIF antes de montar React -->
+  <link rel="preload" as="image" href="/fondoSyskovex.avif" type="image/avif" />
+
+  <title>Syskovex - Laboratorio Técnico y Proyectos de Ingeniería IT</title>
+
+  <!-- Metadescripción semántica basada en la identidad técnica de tu laboratorio -->
+<meta name="description"
+  content="Laboratorio personal de Syskovex. Espacio dedicado a la experimentación y despliegue de proyectos de infraestructura IT, redes, virtualización con Proxmox y desarrollo de software." />
+
+  <!-- URL Canónica apuntando al dominio principal estable -->
+  <link rel="canonical" href="https://syskovex.com" />
+
+  <!-- Iconos y Manifest (Usa los mismos archivos que tienes o heredarás) -->
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_ES" />
+  <meta property="og:title" content="Syskovex - Mi Laboratorio de Infraestructura y Software" />
+  <meta property="og:description"
+    content="Sitio personal en construcción. Explora mis entornos de pruebas Linux, virtualización, redes y proyectos técnicos." />
+  <meta property="og:url" content="https://syskovex.com" />
+  <meta property="og:site_name" content="Syskovex" />
+  <meta property="og:image" content="https://syskovex.comog-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Sitio oficial de Syskovex en construcción" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Syskovex - Infraestructura, Sistemas, Software y Automatización" />
+  <meta name="twitter:description"
+    content="Laboratorio técnico centrado en infraestructura IT, entornos Linux, virtualización con Proxmox y desarrollo de soluciones digitales." />
+  <meta name="twitter:image" content="https://syskovex.comog-image.jpg" />
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>

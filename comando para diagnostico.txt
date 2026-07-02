@@ -16,8 +16,8 @@ echo "Node version: $(node -v 2>&1)" >> "$LOG_FILE"
 echo "NPM version: $(npm -v 2>&1)" >> "$LOG_FILE"
 
 # 2. Buscar discrepancias de mayúsculas/minúsculas en los imports (Causa común de congelamiento)
-echo -e "\n[2/5] Buscando posibles problemas de mayúsculas/minúsculas en imports..." >> "$LOG_FILE"
-# Busca líneas con 'import' e intenta contrastar si hay errores obvios de consistencia
+echo -e "\n[2/5] Lista de rutas e imports encontrados en el proyecto..." >> "$LOG_FILE"
+# Busca líneas con 'import' para tener un registro visual de las rutas
 grep -r "import" src/ --include=\*.{js,jsx,ts,tsx} >> "$LOG_FILE" 2>&1
 
 # 3. Limpiar caché corrupta de npm y Vite
@@ -39,14 +39,11 @@ else
     cat vite.config.js >> "$LOG_FILE" 2>&1
 fi
 
-# 5. Intentar levantar Vite en modo depuración (Debug) y capturar los primeros segundos
-echo -e "\n[5/5] Probando arranque del servidor en modo DEBUG (Seguimiento interno)..." >> "$LOG_FILE"
-echo "Iniciando servidor Vite con registros detallados por 5 segundos..." >> "$LOG_FILE"
-# Ejecuta Vite con la bandera de depuración y lo cierra automáticamente tras 5 segundos
-DEBUG=vite:* npx vite --force & PID=$!
-sleep 5
-kill $PID >> /dev/null 2>&1
-echo "Prueba de arranque completada." >> "$LOG_FILE"
+# 5. Probar una compilación de producción para asegurar que no hay errores reales
+echo -e "\n[5/5] Probando prueba de compilación real (Vite Build)..." >> "$LOG_FILE"
+echo "Ejecutando npx vite build para buscar fallos de código..." >> "$LOG_FILE"
+npx vite build >> "$LOG_FILE" 2>&1
+echo "Prueba de compilación completada." >> "$LOG_FILE"
 
 echo "---------------------------------------------------" >> "$LOG_FILE"
 echo "=== DIAGNÓSTICO FINALIZADO ===" >> "$LOG_FILE"

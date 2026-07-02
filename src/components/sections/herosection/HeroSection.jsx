@@ -1,6 +1,6 @@
 import "./HeroSection.css";
 
-export default function HeroSection({ countdown, portfolioUrl }) {
+export default function HeroSection({ portfolioUrl }) {
   return (
     <section className="heroLanding" id="hero">
       <div className="heroLanding__content">
@@ -8,8 +8,8 @@ export default function HeroSection({ countdown, portfolioUrl }) {
         <h1 className="heroLanding__title">Sitio oficial en construcción</h1>
 
         <p className="heroLanding__text">
-          La web principal está en desarrollo. Serás redirigido automáticamente
-          a mi portfolio interactivo en <strong>{countdown}</strong> segundos.
+          La web principal está en desarrollo. Mientras tanto, puedes visitar mi
+          portfolio interactivo.
         </p>
 
         <div className="heroLanding__actions">

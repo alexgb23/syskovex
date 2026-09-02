@@ -1,12 +1,19 @@
-import HeroSection from "../../components/sections/herosection/HeroSection";
 import usePageTitle from "../../hooks/usePageTitle";
+import HeroSection from "./components/HeroSection/HeroSection";
+import OverviewStats from "./components/OverviewStats/OverviewStats";
+import OverviewServices from "./components/OverviewServices/OverviewServices";
+import styles from "./Home.module.css";
 
 function Home() {
-  usePageTitle("Syskovex | Sitio oficial en construcción");
+  usePageTitle("Syskovex | Resumen");
 
-  const portfolioUrl = "https://alex.syskovex.com/";
-
-  return <HeroSection portfolioUrl={portfolioUrl} />;
+  return (
+    <div className={styles.home}>
+      <HeroSection />
+      <OverviewStats />
+      <OverviewServices />
+    </div>
+  );
 }
 
 export default Home;

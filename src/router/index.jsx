@@ -2,16 +2,16 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router";
 import MainLayout from "../components/layout/MainLayout";
 
-// Modificamos la función para que resuelva correctamente las exportaciones por defecto
+// Helper para lazy + preload
 function lazyWithPreload(importer) {
   const Component = lazy(importer);
   Component.preload = importer;
   return Component;
 }
 
-// CORRECCIÓN: Quitamos el "export const" y forzamos el mapeo del módulo default
-const Home = lazyWithPreload(() => import("../pages/home/Home"));
-const About = lazyWithPreload(() => import("../pages/about/About"));
+// Páginas (exportadas para posible reuso/preloading manual)
+export const Home = lazyWithPreload(() => import("../pages/home/Home"));
+export const About = lazyWithPreload(() => import("../pages/about/About"));
 
 export default function AppRouter() {
   return (
@@ -36,6 +36,7 @@ export default function AppRouter() {
           }
         />
       </Route>
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -1,6 +1,65 @@
-/* =========================================================
-   RESET / ESTRUCTURA BASE
-   ========================================================= */
+:root {
+  color-scheme: dark;
+
+  /* Tipografía */
+  --font-sans:
+    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --font-heading:
+    "Space Grotesk", "Inter", system-ui, sans-serif;
+
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+
+  /* Fondos */
+  --color-page: #050912;
+  --color-sidebar: #070c15;
+  --color-main: #080e18;
+  --color-footer: #070c15;
+
+  /* Superficies: tarjetas, inputs y controles */
+  --color-surface: #0d1624;
+  --color-surface-soft: #101c2c;
+  --color-surface-hover: #14243a;
+  --color-surface-active: #172b45;
+
+  /* Tipografía y contenido */
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+
+  /* Bordes */
+  --color-border: #1d3048;
+  --color-border-strong: #2a4567;
+
+  --color-border: #1d3048;
+  --color-border-strong: #2a4567;
+  --color-border-soft: #142238;
+
+  /* Identidad / interacción */
+  --color-primary: #1677ff;
+  --color-primary-hover: #2d8cff;
+  --color-primary-active: #0754d8;
+  --color-primary-soft: rgb(22 119 255 / 0.14);
+
+  /* Estados */
+  --color-success: #5eea7a;
+  --color-warning: #facc15;
+  --color-danger: #fb7185;
+
+  /* Sombras y efectos */
+  --shadow-panel: 0 1rem 2.5rem rgb(0 0 0 / 0.28);
+  --shadow-glow: 0 0 1.5rem rgb(22 119 255 / 0.2);
+
+  /* Medidas reutilizables */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+
+  --container: 75rem;
+  --transition-fast: 160ms ease;
+}
 
 *,
 *::before,
@@ -8,55 +67,80 @@
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
+html {
   min-height: 100%;
-  width: 100%;
+  scroll-behavior: smooth;
+  background: var(--color-page);
 }
 
-html {
-  scroll-behavior: smooth;
+body,
+#root {
+  min-width: 100%;
+  min-height: 100%;
 }
 
 body {
   margin: 0;
-  font-family:
-    "Inter",
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  overflow-x: hidden;
+  background: var(--color-page);
+  color: var(--color-text);
+  font-family: var(--font-sans);
   font-synthesis: none;
+  line-height: 1.5;
   text-rendering: optimizeLegibility;
 }
 
 h1,
 h2,
-h3 {
-  font-family: "Space Grotesk", sans-serif;
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  line-height: 1.1;
 }
 
-code,
-pre,
-kbd,
-samp {
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    monospace;
+p {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 button,
 input,
 textarea,
 select {
-  font-family: "Inter", system-ui, sans-serif;
+  font: inherit;
   color: inherit;
 }
 
 button {
+  border: 0;
   cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  border: 0;
+  outline: 0;
+  background: transparent;
+}
+
+textarea {
+  resize: vertical;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 img,
@@ -69,41 +153,39 @@ svg {
   height: auto;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
+}
+
+pre {
+  overflow-x: auto;
 }
 
 ::selection {
-  background: var(--accent);
   color: #fff;
+  background: var(--color-primary);
 }
 
-/* =========================================================
-   HELPERS GLOBALES
-   ========================================================= */
+:focus-visible {
+  outline: 2px solid var(--color-primary-hover);
+  outline-offset: 3px;
+}
 
 .container {
-  width: min(var(--container), calc(100% - 24px));
-  margin: 0 auto;
-}
-
-@media (min-width: 721px) {
-  .container {
-    width: min(var(--container), calc(100% - 40px));
-  }
+  width: min(var(--container), calc(100% - 1.5rem));
+  margin-inline: auto;
 }
 
 .sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
-  padding: 0;
-  margin: -1px;
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-  border: 0;
 }
 
 .notranslate,
@@ -111,4 +193,10 @@ code,
 pre,
 .laboratory-counter strong {
   translate: no !important;
+}
+
+@media (min-width: 45rem) {
+  .container {
+    width: min(var(--container), calc(100% - 2.5rem));
+  }
 }

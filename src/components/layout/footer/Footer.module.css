@@ -1,0 +1,107 @@
+.footer {
+  grid-area: footer;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  background:
+    linear-gradient(
+      180deg,
+      rgb(7 12 21 / 0.98),
+      rgb(5 9 18 / 0.98)
+    );
+  color: var(--color-text-muted);
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.metrics {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.metric {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.metricIcon {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+}
+
+.metricContent {
+  min-width: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.metricContent span {
+  color: var(--color-text-subtle);
+  font-size: clamp(0.5rem, 0.55vw, 0.625rem);
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.metricContent strong {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: clamp(0.6875rem, 0.7vw, 0.8125rem);
+  font-weight: 500;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.socials {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.625rem;
+}
+
+.socialLink {
+  width: clamp(2.5rem, 3vw, 3.25rem);
+  height: clamp(2.25rem, 2.7vw, 2.875rem);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  background: rgb(13 22 36 / 0.72);
+  color: var(--color-text-muted);
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.socialLink:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+  color: var(--color-primary-hover);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-0.125rem);
+}
+
+@media (min-width: 40rem) {
+  .footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(4, minmax(0, auto));
+    gap: clamp(1rem, 2vw, 2.5rem);
+  }
+
+  .socials {
+    flex: 0 0 auto;
+  }
+}

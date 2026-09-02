@@ -1,56 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
 import { Outlet } from "react-router";
-// import Navbar from "./Navbar/Navbar";
+import Footer from "./footer/Footer";
+import SidebarNav from "./SidebarNav/SidebarNav";
+import TopNavbar from "./main/TopNavbar";
+import styles from "./MainLayout.module.css";
 
 function MainLayout() {
-  const [themeMode, setThemeMode] = useState("system");
-  const [systemPrefersDark, setSystemPrefersDark] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const handleChange = (event) => {
-      setSystemPrefersDark(event.matches);
-    };
-
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleChange);
-    } else {
-      mediaQuery.addListener(handleChange);
-    }
-
-    return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", handleChange);
-      } else {
-        mediaQuery.removeListener(handleChange);
-      }
-    };
-  }, []);
-
-  const isDarkMode =
-    themeMode === "dark" || (themeMode === "system" && systemPrefersDark);
-
-  useEffect(() => {
-    const resolvedTheme = isDarkMode ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", resolvedTheme);
-    document.documentElement.style.colorScheme = resolvedTheme;
-  }, [isDarkMode]);
-
-  const toggleTheme = useCallback(() => {
-    setThemeMode((currentMode) => {
-      const currentIsDark =
-        currentMode === "system" ? systemPrefersDark : currentMode === "dark";
-
-      return currentIsDark ? "light" : "dark";
-    });
-  }, [systemPrefersDark]);
-
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -69,13 +23,19 @@ function MainLayout() {
         dangerouslySetInnerHTML={{ __html: safeJsonLd }}
       />
 
-      {/* <Navbar
-        isDarkMode={isDarkMode}
-        themeMode={themeMode}
-        toggleTheme={toggleTheme}
-      /> */}
+      <div className={styles.layout}>
+        <SidebarNav className={styles.sidebarArea} />
 
-      <Outlet />
+        <main className={styles.main}>
+          <TopNavbar />
+
+          <section className={styles.body} aria-label="Contenido principal">
+            <Outlet />
+          </section>
+        </main>
+
+        <Footer />
+      </div>
     </>
   );
 }

@@ -1,0 +1,20 @@
+HOME PAGE
+import { usePortfolioHome } from "../../hooks/usePortfolioData";
+
+PROJECTS PAGE
+import { useProjects } from "../../hooks/usePortfolioData";
+
+PROJECT DETAIL PAGE
+import { useProjectDetail } from "../../hooks/usePortfolioData";
+
+LABORATORY PAGE
+import { useLaboratoryHome } from "../../hooks/usePortfolioData";
+
+LABORATORY LIST PAGE (si alguna vez separas landing y list)
+import { useLaboratoryList } from "../../hooks/usePortfolioData";
+
+LABORATORY DETAIL PAGE
+import { useLaboratoryDetail } from "../../hooks/usePortfolioData";
+
+CONTACT PAGE / CHAT
+import { useContactChat } from "../../hooks/usePortfolioData";

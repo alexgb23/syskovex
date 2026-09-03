@@ -236,7 +236,7 @@ function TopNavbar() {
           >
             <img
               className={styles.avatar}
-              src="/favicon-48.png"
+              src="/imgPerfil.png"
               alt=""
               width="32"
               height="32"

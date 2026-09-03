@@ -1,4 +1,4 @@
-import { Mail, Zap, Thermometer, MapPin, ShieldCheck } from "lucide-react";
+import { Zap, Thermometer, MapPin, ShieldCheck } from "lucide-react";
 import styles from "./Footer.module.css";
 import { usePortfolioHome } from "../../../hooks/usePortfolioData";
 
@@ -29,16 +29,16 @@ const footerMetrics = [
   },
 ];
 
-const iconMap = {
-  github: Mail,
-  linkedin: Mail,
-  instagram: Mail,
-  facebook: Mail,
-  envelope: Mail,
-};
+// Filtrar solo las redes que quieres mostrar
+const allowedPlatforms = ["github", "linkedin", "email"];
 
 function Footer() {
-  const { socialLinks, loading } = usePortfolioHome(true);
+  const { socialLinks, loading, error } = usePortfolioHome(true);
+
+  // Filtrar solo las plataformas permitidas
+  const filteredLinks = socialLinks.filter((link) =>
+    allowedPlatforms.includes(link.platform),
+  );
 
   return (
     <footer className={styles.footer}>
@@ -66,12 +66,19 @@ function Footer() {
 
       <nav className={styles.socials} aria-label="Redes sociales">
         {loading ? (
-          <span className={styles.loading}>Cargando redes…</span>
-        ) : socialLinks.length === 0 ? (
-          <span className={styles.empty}>Sin redes configuradas</span>
+          <span className={styles.loading}>Cargando…</span>
+        ) : error ? (
+          <span className={styles.error}>Error al cargar</span>
+        ) : filteredLinks.length === 0 ? (
+          <span className={styles.empty}>Sin redes</span>
         ) : (
-          socialLinks.map((social) => {
-            const IconComponent = iconMap[social.icon_key] || Mail;
+          filteredLinks.map((social) => {
+            const IconComponent =
+              social.platform === "github"
+                ? GitHubIcon
+                : social.platform === "linkedin"
+                  ? LinkedInIcon
+                  : MailIcon;
 
             return (
               <a
@@ -93,6 +100,45 @@ function Footer() {
         )}
       </nav>
     </footer>
+  );
+}
+
+function GitHubIcon({ className = "" }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M12 2C6.477 2 2 6.589 2 12.253c0 4.53 2.865 8.37 6.839 9.727.5.096.682-.222.682-.493 0-.244-.009-1.05-.014-1.905-2.782.619-3.369-1.214-3.369-1.214-.455-1.186-1.11-1.502-1.11-1.502-.908-.639.069-.626.069-.626 1.004.072 1.532 1.058 1.532 1.058.892 1.568 2.34 1.115 2.91.853.09-.666.348-1.115.634-1.371-2.221-.261-4.556-1.143-4.556-5.086 0-1.124.391-2.043 1.03-2.764-.104-.261-.446-1.311.098-2.733 0 0 .84-.276 2.75 1.056A9.314 9.314 0 0 1 12 6.85c.85.004 1.706.118 2.505.347 1.909-1.332 2.748-1.056 2.748-1.056.545 1.422.203 2.472.1 2.733.64.721 1.028 1.64 1.028 2.764 0 3.953-2.34 4.822-4.568 5.078.358.32.676.947.676 1.909 0 1.378-.012 2.488-.012 2.827 0 .274.18.594.688.493C19.138 20.619 22 16.782 22 12.253 22 6.589 17.523 2 12 2Z" />
+    </svg>
+  );
+}
+
+function LinkedInIcon({ className = "" }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M20.452 3H3.548A.548.548 0 0 0 3 3.548v16.904c0 .303.245.548.548.548h16.904a.548.548 0 0 0 .548-.548V3.548A.548.548 0 0 0 20.452 3ZM8.339 18.337H5.671V9.755h2.668v8.582ZM7.005 8.583a1.547 1.547 0 1 1 0-3.094 1.547 1.547 0 0 1 0 3.094Zm11.332 9.754h-2.666v-4.174c0-.995-.018-2.276-1.387-2.276-1.389 0-1.601 1.084-1.601 2.204v4.246h-2.666V9.755h2.559v1.173h.036c.356-.675 1.227-1.387 2.525-1.387 2.702 0 3.2 1.778 3.2 4.091v4.705Z" />
+    </svg>
+  );
+}
+
+function MailIcon({ className = "" }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z" />
+    </svg>
   );
 }
 

@@ -3,4 +3,4 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; img-src 'self' https: data: blob:; style-src 'self' 'unsafe-inline' https:; script-src 'self' https:; font-src 'self' data: https:; connect-src 'self' https://portfolio-api.syskovex.com https://alex.syskovex.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; img-src 'self' https: data: blob:; style-src 'self' 'unsafe-inline' https:; script-src 'self' https:; font-src 'self' data: https:; connect-src 'self' https://portfolio-api.syskovex.com https://syskovex.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import {
   Bell,
   ChevronDown,
@@ -11,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import styles from "./TopNavbar.module.css";
+import { useSearch } from "../../../context/SearchContext";
 
 const notifications = [
   {
@@ -34,10 +36,12 @@ const notifications = [
 ];
 
 function TopNavbar() {
+  const { searchQuery, setSearchQuery, isSearchOpen, setIsSearchOpen } =
+    useSearch();
+  const navigate = useNavigate();
+
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
 
   const profileRef = useRef(null);
   const notificationsRef = useRef(null);
@@ -78,7 +82,7 @@ function TopNavbar() {
       document.removeEventListener("mousedown", handleOutsideClick);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [setIsSearchOpen]);
 
   const toggleSearch = () => {
     setIsSearchOpen((currentValue) => !currentValue);
@@ -113,21 +117,29 @@ function TopNavbar() {
 
               <input
                 type="search"
-                value={searchValue}
-                onChange={(event) => setSearchValue(event.target.value)}
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    if (searchQuery.trim()) {
+                      navigate(`/${searchQuery.trim().toLowerCase()}`);
+                    }
+                  }
+                }}
                 placeholder="Buscar en el laboratorio..."
                 aria-label="Buscar en el laboratorio"
                 autoFocus
               />
 
-              {searchValue && (
+              {searchQuery && (
                 <button
                   type="button"
                   className={styles.clearSearchButton}
-                  onClick={() => setSearchValue("")}
+                  onClick={() => setSearchQuery("")}
                   aria-label="Limpiar búsqueda"
                 >
-                  <X size={15} strokeWidth={1.8} aria-hidden="true" />
+                  <Search size={15} strokeWidth={1.8} aria-hidden="true" />
                 </button>
               )}
             </div>
@@ -141,7 +153,6 @@ function TopNavbar() {
             onClick={toggleSearch}
             aria-label={isSearchOpen ? "Cerrar búsqueda" : "Buscar"}
             aria-expanded={isSearchOpen}
-            aria-controls="lab-search-panel"
           >
             {isSearchOpen ? (
               <X size={19} strokeWidth={1.8} aria-hidden="true" />

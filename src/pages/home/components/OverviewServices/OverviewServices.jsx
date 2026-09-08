@@ -271,7 +271,7 @@ function ServiceItem({ service }) {
 
       <span className={styles.onlineStatus}>
         Online
-        <span className={styles.onlineDot} aria-label="Online" />
+        <span className={styles.onlineDot} aria-hidden="true" />
       </span>
     </li>
   );

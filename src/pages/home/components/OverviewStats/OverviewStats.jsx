@@ -126,7 +126,7 @@ function StatCard({ stat }) {
           {stat.unit}
 
           {stat.status === "online" && (
-            <span className={styles.onlineDot} aria-label="Online" />
+            <span className={styles.onlineDot} aria-hidden="true" />
           )}
         </span>
       </div>

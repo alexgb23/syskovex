@@ -1,17 +1,24 @@
 # Syskovex - Laboratorio Técnico Principal
 
-Información de la landing page oficial en construcción del ecosistema tecnológico personal de Alexander Galvez (Syskovex). Este dominio actúa como punto de enlace principal hacia su entorno operativo y portafolio técnico.
+> Landing oficial del ecosistema tecnológico personal de Alexander Galvez (Syskovex), con acceso a su portafolio técnico y entorno operativo.
 
-## Detalles de Identidad
-- **Operador:** Alexander Galvez (Alex)
-- **Concepto:** Laboratorio tecnológico personal e independiente.
-- **Enfoque Operativo:** Documentación de arquitecturas reales, administración de entornos Linux, virtualización con Proxmox, segmentación de redes, integraciones inteligentes y software estructurado.
+Syskovex es un laboratorio tecnológico personal e independiente centrado en documentar arquitecturas reales, administración de entornos Linux, virtualización con Proxmox, segmentación de redes, integraciones inteligentes y software estructurado.
 
-## Estado del Sitio
-- **Fase Actual:** En construcción / Desarrollo activo.
-- **Comportamiento:** Landing informativa temporal con un sistema de redirección automático programado por eventos de React hacia el entorno canónico del portafolio.
+## Identidad
 
-## Enlaces del Ecosistema
-- **Dominio Principal (Esta Landing):** https://syskovex.com
-- **Subdominio de Destino (Portafolio Activo):** https://alex.syskovex.com
-- **Código Fuente General:** https://github.com/alexgb23
+- Operador: Alexander Galvez (Alex)
+- Concepto: Laboratorio tecnológico personal e independiente
+- Estado: En construcción y desarrollo activo
+
+## Sitio
+
+- [Landing principal de Syskovex](https://syskovex.com): página oficial del laboratorio tecnológico
+- [Portafolio técnico activo](https://alex.syskovex.com): entorno operativo y portafolio principal
+
+## Proyectos
+
+- [Código fuente en GitHub](https://github.com/alexgb23): repositorios y proyectos de Alexander Galvez
+
+## Optional
+
+- [Perfil de LinkedIn](https://www.linkedin.com/in/alexander-galvez-benavides-450917281/): perfil profesional del operador

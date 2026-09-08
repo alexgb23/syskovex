@@ -26,8 +26,8 @@
 
   /* Tipografía y contenido */
   --color-text: #f1f5f9;
-  --color-text-muted: #94a3b8;
-  --color-text-subtle: #64748b;
+--color-text-subtle: #bec8fa;
+--color-text-muted: #e0e7ff;
 
 /* Bordes */
 --color-border: #1d3048;

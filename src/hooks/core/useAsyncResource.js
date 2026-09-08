@@ -38,7 +38,51 @@ function hasMeaningfulData(value, initialValue) {
 }
 
 const resourceCache = new Map();
+const pendingRequests = new Map();
 const CACHE_TTL = 5 * 60 * 1000;
+
+function getCachedResource(cacheKey) {
+  const cached = resourceCache.get(cacheKey);
+
+  if (!cached) return null;
+
+  const isFresh = Date.now() - cached.time < CACHE_TTL;
+
+  if (!isFresh) {
+    resourceCache.delete(cacheKey);
+    return null;
+  }
+
+  return cached.data;
+}
+
+function getSharedRequest(cacheKey, fetcher) {
+  const pending = pendingRequests.get(cacheKey);
+
+  if (pending) {
+    return pending;
+  }
+
+  const request = Promise.resolve()
+    .then(fetcher)
+    .then((result) => {
+      const data = result ?? null;
+
+      resourceCache.set(cacheKey, {
+        data,
+        time: Date.now(),
+      });
+
+      return data;
+    })
+    .finally(() => {
+      pendingRequests.delete(cacheKey);
+    });
+
+  pendingRequests.set(cacheKey, request);
+
+  return request;
+}
 
 export default function useAsyncResource(
   fetcher,
@@ -59,12 +103,11 @@ export default function useAsyncResource(
       };
     }
 
-    const cached = resourceCache.get(cacheKey);
-    const isFresh = cached && Date.now() - cached.time < CACHE_TTL;
+    const cachedData = getCachedResource(cacheKey);
 
-    if (isFresh) {
+    if (cachedData !== null) {
       return {
-        data: cached.data,
+        data: cachedData,
         loading: false,
         error: "",
         isRefreshing: false,
@@ -87,67 +130,57 @@ export default function useAsyncResource(
         error: "",
         isRefreshing: false,
       });
-      return;
+
+      return undefined;
     }
 
-    const cached = resourceCache.get(cacheKey);
-    const isFresh = cached && Date.now() - cached.time < CACHE_TTL;
+    const cachedData = getCachedResource(cacheKey);
 
-    if (isFresh) {
+    if (cachedData !== null) {
       setState({
-        data: cached.data,
+        data: cachedData,
         loading: false,
         error: "",
         isRefreshing: false,
       });
-      return;
+
+      return undefined;
     }
 
     let ignore = false;
 
-    async function load() {
-      setState((prev) => {
-        const hasData = hasMeaningfulData(prev.data, initialValue);
+    setState((previous) => {
+      const hasData = hasMeaningfulData(previous.data, initialValue);
 
-        return {
-          ...prev,
-          loading: !hasData,
-          isRefreshing: hasData,
-          error: "",
-        };
-      });
+      return {
+        ...previous,
+        loading: !hasData,
+        isRefreshing: hasData,
+        error: "",
+      };
+    });
 
-      try {
-        const result = await fetcher();
-
+    getSharedRequest(cacheKey, fetcher)
+      .then((data) => {
         if (ignore) return;
-
-        const data = result ?? initialValue;
-
-        resourceCache.set(cacheKey, {
-          data,
-          time: Date.now(),
-        });
 
         setState({
-          data,
+          data: data ?? initialValue,
           loading: false,
           error: "",
           isRefreshing: false,
         });
-      } catch (err) {
+      })
+      .catch((error) => {
         if (ignore) return;
 
-        setState((prev) => ({
-          ...prev,
+        setState((previous) => ({
+          ...previous,
           loading: false,
           isRefreshing: false,
-          error: buildHookErrorMessage(label, err),
+          error: buildHookErrorMessage(label, error),
         }));
-      }
-    }
-
-    load();
+      });
 
     return () => {
       ignore = true;

@@ -247,7 +247,7 @@ function TopNavbar() {
           >
             <img
               className={styles.avatar}
-              src="/imgPerfil.png"
+              src="/imgPerfil.webp"
               alt=""
               width="32"
               height="32"
@@ -271,7 +271,7 @@ function TopNavbar() {
           {isProfileOpen && (
             <div id="profile-menu" className={styles.dropdown}>
               <div className={styles.profileDropdownHeader}>
-                <img src="/imgPerfil.png" alt="" width="42" height="42" />
+                <img src="/imgPerfil.webp" alt="" width="42" height="42" />
 
                 <div>
                   <strong>Alex</strong>

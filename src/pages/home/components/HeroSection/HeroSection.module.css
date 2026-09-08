@@ -197,12 +197,13 @@
 .heroVisual {
   position: relative;
   min-height: 14rem;
+  aspect-ratio: 1672 / 941;
   overflow: hidden;
   order: -1;
   background: var(--color-page);
 }
 
-/* Necesario porque picture es el contenedor directo de img */
+/* picture es el contenedor directo del img */
 .heroVisual picture {
   display: block;
   width: 100%;
@@ -256,6 +257,7 @@
 
   .heroVisual {
     min-height: 25rem;
+    aspect-ratio: auto;
     order: initial;
   }
 

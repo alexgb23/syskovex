@@ -1,6 +1,7 @@
 .footer {
   grid-area: footer;
   min-width: 0;
+  min-height: 8.875rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -58,21 +59,32 @@
 }
 
 .socials {
+  min-height: clamp(2.25rem, 2.7vw, 2.875rem);
   display: flex;
   align-items: center;
   justify-content: space-around;
   gap: 0.625rem;
 }
 
-.socialLink {
+.socialLink,
+.socialPlaceholder {
   width: clamp(2.5rem, 3vw, 3.25rem);
   height: clamp(2.25rem, 2.7vw, 2.875rem);
   display: grid;
+  flex: 0 0 auto;
   place-items: center;
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-md);
   background: rgb(13 22 36 / 0.72);
   color: var(--color-text-muted);
+}
+
+.socialPlaceholder {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.socialLink {
   transition:
     border-color var(--transition-fast),
     background-color var(--transition-fast),
@@ -89,8 +101,14 @@
   transform: translateY(-0.125rem);
 }
 
+.socialIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
 @media (min-width: 40rem) {
   .footer {
+    min-height: 5.875rem;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -103,5 +121,6 @@
 
   .socials {
     flex: 0 0 auto;
+    justify-content: flex-end;
   }
 }

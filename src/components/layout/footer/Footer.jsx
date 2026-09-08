@@ -29,19 +29,21 @@ const footerMetrics = [
   },
 ];
 
-// Filtrar solo las redes que quieres mostrar
 const allowedPlatforms = ["github", "linkedin", "email"];
 
-function Footer() {
+function Footer({ className = "" }) {
   const { socialLinks, loading, error } = usePortfolioHome(true);
 
-  // Filtrar solo las plataformas permitidas
-  const filteredLinks = socialLinks.filter((link) =>
-    allowedPlatforms.includes(link.platform),
-  );
+  const filteredLinks = Array.isArray(socialLinks)
+    ? socialLinks
+        .filter((link) =>
+          allowedPlatforms.includes((link?.platform || "").toLowerCase()),
+        )
+        .sort((a, b) => (a?.sort_order ?? 999) - (b?.sort_order ?? 999))
+    : [];
 
   return (
-    <footer className={styles.footer}>
+    <footer className={`${styles.footer} ${className}`}>
       <div className={styles.metrics}>
         {footerMetrics.map((metric) => {
           const { Icon } = metric;
@@ -66,29 +68,54 @@ function Footer() {
 
       <nav className={styles.socials} aria-label="Redes sociales">
         {loading ? (
-          <span className={styles.loading}>Cargando…</span>
-        ) : error ? (
-          <span className={styles.error}>Error al cargar</span>
-        ) : filteredLinks.length === 0 ? (
-          <span className={styles.empty}>Sin redes</span>
+          <>
+            <span className={styles.socialPlaceholder} aria-hidden="true" />
+            <span className={styles.socialPlaceholder} aria-hidden="true" />
+            <span className={styles.socialPlaceholder} aria-hidden="true" />
+          </>
+        ) : error || filteredLinks.length === 0 ? (
+          <>
+            <span
+              className={styles.socialPlaceholder}
+              aria-label="GitHub no disponible"
+            />
+            <span
+              className={styles.socialPlaceholder}
+              aria-label="LinkedIn no disponible"
+            />
+            <span
+              className={styles.socialPlaceholder}
+              aria-label="Email no disponible"
+            />
+          </>
         ) : (
           filteredLinks.map((social) => {
+            const platform = (social.platform || "").toLowerCase();
+
             const IconComponent =
-              social.platform === "github"
+              platform === "github"
                 ? GitHubIcon
-                : social.platform === "linkedin"
+                : platform === "linkedin"
                   ? LinkedInIcon
                   : MailIcon;
+
+            let href = social.url || "#";
+
+            if (platform === "email" && !href.startsWith("mailto:")) {
+              href = `mailto:${href}`;
+            }
+
+            const isEmail = platform === "email";
 
             return (
               <a
                 className={styles.socialLink}
-                href={social.url}
-                target={social.platform === "email" ? undefined : "_blank"}
-                rel={social.platform === "email" ? undefined : "noreferrer"}
-                aria-label={social.label}
-                key={social.id}
-                title={social.title}
+                href={href}
+                target={isEmail ? undefined : "_blank"}
+                rel={isEmail ? undefined : "noopener noreferrer"}
+                aria-label={social.label || social.title || platform}
+                key={social.id || platform}
+                title={social.title || platform}
               >
                 <IconComponent
                   className={styles.socialIcon}

@@ -34,7 +34,7 @@ function MainLayout() {
           </section>
         </main>
 
-        <Footer />
+        <Footer className={styles.footer} />
       </div>
     </>
   );

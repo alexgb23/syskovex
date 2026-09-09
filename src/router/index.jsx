@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router";
 import MainLayout from "../components/layout/MainLayout";
+import Home from "../pages/home/Home";
 
 function lazyWithPreload(importer) {
   const Component = lazy(importer);
@@ -8,28 +9,38 @@ function lazyWithPreload(importer) {
   return Component;
 }
 
-// Páginas existentes
-export const Home = lazyWithPreload(() => import("../pages/home/Home"));
+// Home es la página inicial y contiene el LCP.
+// Se importa directamente para renderizarla sin esperar a un chunk adicional.
+
+// Páginas cargadas bajo demanda
 export const About = lazyWithPreload(() => import("../pages/about/About"));
 
-// Nuevas páginas
 const Infraestructura = lazyWithPreload(
   () => import("../pages/infraestructura/Infraestructura"),
 );
+
 const Proxmox = lazyWithPreload(() => import("../pages/proxmox/Proxmox"));
+
 const Servicios = lazyWithPreload(() => import("../pages/servicios/Servicios"));
+
 const Domotica = lazyWithPreload(() => import("../pages/domotica/Domotica"));
+
 const IaAutomatizacion = lazyWithPreload(
   () => import("../pages/ia-automatizacion/IaAutomatizacion"),
 );
+
 const RedSeguridad = lazyWithPreload(
   () => import("../pages/red-seguridad/RedSeguridad"),
 );
+
 const Monitorizacion = lazyWithPreload(
   () => import("../pages/monitorizacion/Monitorizacion"),
 );
+
 const Backups = lazyWithPreload(() => import("../pages/backups/Backups"));
+
 const Proyectos = lazyWithPreload(() => import("../pages/proyectos/Proyectos"));
+
 const Documentacion = lazyWithPreload(
   () => import("../pages/documentacion/Documentacion"),
 );
@@ -38,14 +49,7 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route
-          index
-          element={
-            <Suspense fallback={null}>
-              <Home />
-            </Suspense>
-          }
-        />
+        <Route index element={<Home />} />
 
         <Route
           path="about"

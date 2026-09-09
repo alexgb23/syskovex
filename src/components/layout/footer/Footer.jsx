@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Zap, Thermometer, MapPin, ShieldCheck } from "lucide-react";
 import styles from "./Footer.module.css";
 import { usePortfolioHome } from "../../../hooks/usePortfolioData";
@@ -32,7 +33,36 @@ const footerMetrics = [
 const allowedPlatforms = ["github", "linkedin", "email"];
 
 function Footer({ className = "" }) {
-  const { socialLinks, loading, error } = usePortfolioHome(true);
+  const [shouldLoadSocials, setShouldLoadSocials] = useState(false);
+
+  useEffect(() => {
+    let idleCallbackId;
+    let timeoutId;
+
+    const loadSocials = () => {
+      setShouldLoadSocials(true);
+    };
+
+    if ("requestIdleCallback" in window) {
+      idleCallbackId = window.requestIdleCallback(loadSocials, {
+        timeout: 2500,
+      });
+    } else {
+      timeoutId = window.setTimeout(loadSocials, 1000);
+    }
+
+    return () => {
+      if (idleCallbackId) {
+        window.cancelIdleCallback(idleCallbackId);
+      }
+
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, []);
+
+  const { socialLinks, loading, error } = usePortfolioHome(shouldLoadSocials);
 
   const filteredLinks = Array.isArray(socialLinks)
     ? socialLinks
@@ -41,6 +71,9 @@ function Footer({ className = "" }) {
         )
         .sort((a, b) => (a?.sort_order ?? 999) - (b?.sort_order ?? 999))
     : [];
+
+  const showPlaceholders =
+    !shouldLoadSocials || loading || error || filteredLinks.length === 0;
 
   return (
     <footer className={`${styles.footer} ${className}`}>
@@ -66,30 +99,20 @@ function Footer({ className = "" }) {
         })}
       </div>
 
-      <nav
-        className={styles.socials}
-        aria-label="Redes sociales"
-        key="footer-socials"
-      >
-        {loading ? (
-          <>
-            <span className={styles.socialPlaceholder} aria-hidden="true" />
-            <span className={styles.socialPlaceholder} aria-hidden="true" />
-            <span className={styles.socialPlaceholder} aria-hidden="true" />
-          </>
-        ) : error || filteredLinks.length === 0 ? (
+      <nav className={styles.socials} aria-label="Redes sociales">
+        {showPlaceholders ? (
           <>
             <span
               className={styles.socialPlaceholder}
-              aria-label="GitHub no disponible"
+              aria-label="GitHub no disponible temporalmente"
             />
             <span
               className={styles.socialPlaceholder}
-              aria-label="LinkedIn no disponible"
+              aria-label="LinkedIn no disponible temporalmente"
             />
             <span
               className={styles.socialPlaceholder}
-              aria-label="Email no disponible"
+              aria-label="Email no disponible temporalmente"
             />
           </>
         ) : (
@@ -168,7 +191,7 @@ function MailIcon({ className = "" }) {
       fill="currentColor"
       aria-hidden="true"
     >
-      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z" />
+      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-1-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z" />
     </svg>
   );
 }

@@ -23,6 +23,10 @@
   <!-- URL canónica apuntando al dominio principal estable -->
   <link rel="canonical" href="https://syskovex.com" />
 
+  <!-- Conexión anticipada con la API usada por el footer -->
+  <link rel="preconnect" href="https://portfolio-api.syskovex.com" crossorigin />
+  <link rel="dns-prefetch" href="//portfolio-api.syskovex.com" />
+
   <!-- 🔧 Preload del CSS crítico para reducir render-blocking -->
   <link rel="preload" as="style" href="/assets/index-DUMAPUws.css" />
 
@@ -74,7 +78,7 @@
         fetchpriority="high" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover;" />
     </picture>
 
-    
+
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

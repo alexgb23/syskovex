@@ -23,6 +23,8 @@
   <!-- URL canónica apuntando al dominio principal estable -->
   <link rel="canonical" href="https://syskovex.com" />
 
+  <!-- 🔧 Preload del CSS crítico para reducir render-blocking -->
+  <link rel="preload" as="style" href="/assets/index-DUMAPUws.css" />
 
   <!-- Iconos y manifest -->
   <link rel="icon" href="/favicon.ico" />
@@ -57,6 +59,22 @@
 
 
 <body>
+
+    <!-- 🔧 Imagen de LCP crítica en HTML inicial -->
+    <picture id="lcp-image" style="position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%;">
+      <source media="(max-width: 39.99rem)" type="image/avif" srcSet="/img_hero/img_hero_lab_480_avif.avif" />
+      <source media="(max-width: 39.99rem)" type="image/webp" srcSet="/img_hero/img_hero_lab_480_webp.webp" />
+      <source media="(max-width: 63.99rem)" type="image/avif" srcSet="/img_hero/img_hero_lab_768_avif.avif" />
+      <source media="(max-width: 63.99rem)" type="image/webp" srcSet="/img_hero/img_hero_lab_768_webp.webp" />
+      <source media="(max-width: 89.99rem)" type="image/avif" srcSet="/img_hero/img_hero_lab_1200_avif.avif" />
+      <source media="(max-width: 89.99rem)" type="image/webp" srcSet="/img_hero/img_hero_lab_1200_webp.webp" />
+      <source type="image/avif" srcSet="/img_hero/img_hero_lab_1600_avif.avif" />
+      <source type="image/webp" srcSet="/img_hero/img_hero_lab_1600_webp.webp" />
+      <img src="/img_hero/img_hero_lab_1600_webp.webp" alt="Laboratorio Syskovex" width="1672" height="941"
+        fetchpriority="high" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover;" />
+    </picture>
+
+    
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

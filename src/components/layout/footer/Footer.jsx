@@ -66,7 +66,11 @@ function Footer({ className = "" }) {
         })}
       </div>
 
-      <nav className={styles.socials} aria-label="Redes sociales">
+      <nav
+        className={styles.socials}
+        aria-label="Redes sociales"
+        key="footer-socials"
+      >
         {loading ? (
           <>
             <span className={styles.socialPlaceholder} aria-hidden="true" />

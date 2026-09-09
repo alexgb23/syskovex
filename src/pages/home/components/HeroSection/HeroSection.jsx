@@ -154,7 +154,7 @@ function HeroSection() {
             width="1672"
             height="941"
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
           />
         </picture>

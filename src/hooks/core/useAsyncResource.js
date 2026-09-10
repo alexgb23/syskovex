@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+// src/hooks/core/useAsyncResource.js
+import { useEffect, useState, useRef } from "react";
 
 function buildHookErrorMessage(label, error) {
   if (error instanceof Error) {
@@ -39,7 +40,7 @@ function hasMeaningfulData(value, initialValue) {
 
 const resourceCache = new Map();
 const pendingRequests = new Map();
-const CACHE_TTL = 5 * 60 * 1000;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
 function getCachedResource(cacheKey) {
   const cached = resourceCache.get(cacheKey);
@@ -84,6 +85,13 @@ function getSharedRequest(cacheKey, fetcher) {
   return request;
 }
 
+/**
+ * Hook profesional para cargar recursos asíncronos con:
+ * - Caché en memoria (TTL configurable)
+ * - Deduplicación de peticiones concurrentes
+ * - Reintentos automáticos en caso de error
+ * - Estados: loading, isRefreshing, error
+ */
 export default function useAsyncResource(
   fetcher,
   initialValue,
@@ -93,6 +101,11 @@ export default function useAsyncResource(
 ) {
   const cacheKey = JSON.stringify([label, enabled, ...deps]);
 
+  const retryTimeoutRef = useRef(null);
+  const retryCountRef = useRef(0);
+  const prevEnabledRef = useRef(enabled);
+  const startTimeRef = useRef(null);
+
   const [state, setState] = useState(() => {
     if (!enabled) {
       return {
@@ -100,6 +113,7 @@ export default function useAsyncResource(
         loading: false,
         error: "",
         isRefreshing: false,
+        responseTime: null,
       };
     }
 
@@ -111,6 +125,7 @@ export default function useAsyncResource(
         loading: false,
         error: "",
         isRefreshing: false,
+        responseTime: null,
       };
     }
 
@@ -119,16 +134,29 @@ export default function useAsyncResource(
       loading: true,
       error: "",
       isRefreshing: false,
+      responseTime: null,
     };
   });
 
   useEffect(() => {
+    const prevEnabled = prevEnabledRef.current;
+    prevEnabledRef.current = enabled;
+
+    // Limpiar reintentos pendientes si cambia enabled o cacheKey
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
+
     if (!enabled) {
+      retryCountRef.current = 0;
+      startTimeRef.current = null;
       setState({
         data: initialValue,
         loading: false,
         error: "",
         isRefreshing: false,
+        responseTime: null,
       });
 
       return undefined;
@@ -137,11 +165,14 @@ export default function useAsyncResource(
     const cachedData = getCachedResource(cacheKey);
 
     if (cachedData !== null) {
+      retryCountRef.current = 0;
+      startTimeRef.current = null;
       setState({
         data: cachedData,
         loading: false,
         error: "",
         isRefreshing: false,
+        responseTime: null,
       });
 
       return undefined;
@@ -156,34 +187,99 @@ export default function useAsyncResource(
         ...previous,
         loading: !hasData,
         isRefreshing: hasData,
-        error: "",
+        error: prevEnabled && !enabled ? "" : previous.error,
       };
     });
+
+    // Marcamos tiempo de inicio para medir respuesta
+    startTimeRef.current = performance.now();
 
     getSharedRequest(cacheKey, fetcher)
       .then((data) => {
         if (ignore) return;
+
+        const responseTime = startTimeRef.current
+          ? Math.round(performance.now() - startTimeRef.current)
+          : null;
+
+        retryCountRef.current = 0;
+        startTimeRef.current = null;
 
         setState({
           data: data ?? initialValue,
           loading: false,
           error: "",
           isRefreshing: false,
+          responseTime,
         });
       })
       .catch((error) => {
         if (ignore) return;
 
-        setState((previous) => ({
-          ...previous,
-          loading: false,
-          isRefreshing: false,
-          error: buildHookErrorMessage(label, error),
-        }));
+        retryCountRef.current += 1;
+
+        const maxRetries = 2;
+        const retryDelay = 6000; // 6s entre reintentos
+
+        if (retryCountRef.current <= maxRetries) {
+          retryTimeoutRef.current = setTimeout(() => {
+            if (ignore || !enabled) return;
+
+            setState((previous) => ({
+              ...previous,
+              loading: !hasMeaningfulData(previous.data, initialValue),
+              isRefreshing: hasMeaningfulData(previous.data, initialValue),
+              error: "",
+            }));
+
+            startTimeRef.current = performance.now();
+
+            getSharedRequest(cacheKey, fetcher)
+              .then((data) => {
+                if (ignore) return;
+
+                const responseTime = startTimeRef.current
+                  ? Math.round(performance.now() - startTimeRef.current)
+                  : null;
+
+                retryCountRef.current = 0;
+                startTimeRef.current = null;
+
+                setState({
+                  data: data ?? initialValue,
+                  loading: false,
+                  error: "",
+                  isRefreshing: false,
+                  responseTime,
+                });
+              })
+              .catch((e) => {
+                if (ignore) return;
+
+                setState((previous) => ({
+                  ...previous,
+                  loading: false,
+                  isRefreshing: false,
+                  error: buildHookErrorMessage(label, e),
+                }));
+              });
+          }, retryDelay);
+        } else {
+          setState((previous) => ({
+            ...previous,
+            loading: false,
+            isRefreshing: false,
+            error: buildHookErrorMessage(label, error),
+          }));
+        }
       });
 
     return () => {
       ignore = true;
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+        retryTimeoutRef.current = null;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheKey, enabled]);

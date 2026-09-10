@@ -1,3 +1,4 @@
+// src/hooks/pages/usePortfolioHome.js
 import useAsyncResource from "../core/useAsyncResource";
 import { portfolioService } from "../../services/api";
 
@@ -6,7 +7,7 @@ const initialValue = {
 };
 
 export default function usePortfolioHome(enabled = true) {
-  const { data, loading, error, isRefreshing } = useAsyncResource(
+  const { data, loading, error, isRefreshing, responseTime } = useAsyncResource(
     portfolioService.getHomeData,
     initialValue,
     [],
@@ -23,5 +24,6 @@ export default function usePortfolioHome(enabled = true) {
     loading,
     error,
     isRefreshing,
+    responseTime, // ✅ AÑADIR ESTO
   };
 }

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+// src/layouts/footer/Footer.jsx
 import { Zap, Thermometer, MapPin, ShieldCheck } from "lucide-react";
+import { usePortfolioDataContext } from "../MainLayout";
 import styles from "./Footer.module.css";
-import { usePortfolioHome } from "../../../hooks/usePortfolioData";
 
 const footerMetrics = [
   {
@@ -33,36 +33,7 @@ const footerMetrics = [
 const allowedPlatforms = ["github", "linkedin", "email"];
 
 function Footer({ className = "" }) {
-  const [shouldLoadSocials, setShouldLoadSocials] = useState(false);
-
-  useEffect(() => {
-    let idleCallbackId;
-    let timeoutId;
-
-    const loadSocials = () => {
-      setShouldLoadSocials(true);
-    };
-
-    if ("requestIdleCallback" in window) {
-      idleCallbackId = window.requestIdleCallback(loadSocials, {
-        timeout: 2500,
-      });
-    } else {
-      timeoutId = window.setTimeout(loadSocials, 1000);
-    }
-
-    return () => {
-      if (idleCallbackId) {
-        window.cancelIdleCallback(idleCallbackId);
-      }
-
-      if (timeoutId) {
-        window.clearTimeout(timeoutId);
-      }
-    };
-  }, []);
-
-  const { socialLinks, loading, error } = usePortfolioHome(shouldLoadSocials);
+  const { socialLinks, loading, error } = usePortfolioDataContext();
 
   const filteredLinks = Array.isArray(socialLinks)
     ? socialLinks
@@ -72,8 +43,8 @@ function Footer({ className = "" }) {
         .sort((a, b) => (a?.sort_order ?? 999) - (b?.sort_order ?? 999))
     : [];
 
-  const showPlaceholders =
-    !shouldLoadSocials || loading || error || filteredLinks.length === 0;
+  const hasLinks = filteredLinks.length > 0;
+  const showPlaceholders = loading && !hasLinks;
 
   return (
     <footer className={`${styles.footer} ${className}`}>

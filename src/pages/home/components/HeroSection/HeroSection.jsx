@@ -6,6 +6,7 @@ import {
   ServerCog,
   ShieldCheck,
 } from "lucide-react";
+import SystemStatus from "../../../../components/SystemStatus/SystemStatus";
 import styles from "./HeroSection.module.css";
 
 const heroStats = [
@@ -35,7 +36,7 @@ const heroStats = [
   },
 ];
 
-function HeroSection() {
+function HeroSection({ loading, error, responseTime }) {
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
       <div className={styles.heroContent}>
@@ -100,6 +101,15 @@ function HeroSection() {
       </div>
 
       <div className={styles.heroVisual} aria-hidden="true">
+        {/* SystemStatus: esquina superior derecha, sutil */}
+        <div className={styles.systemStatusWrapper}>
+          <SystemStatus
+            loading={loading}
+            error={error}
+            responseTime={responseTime}
+          />
+        </div>
+
         <picture>
           {/* Móvil: hasta 639 px */}
           <source

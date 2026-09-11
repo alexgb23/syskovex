@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
+
 import {
   Bell,
   ChevronDown,
@@ -11,8 +12,11 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+
 import styles from "./TopNavbar.module.css";
 import { useSearch } from "../../../context/SearchContext";
+import { useHealthMetrics } from "../../../hooks/usePortfolioData";
+import SystemStatus from "../../SystemStatus/SystemStatus";
 
 const notifications = [
   {
@@ -36,8 +40,16 @@ const notifications = [
 ];
 
 function TopNavbar() {
+  const {
+    metrics,
+    loading: metricsLoading,
+    error: metricsError,
+    responseTime: metricsResponseTime,
+  } = useHealthMetrics(true);
+
   const { searchQuery, setSearchQuery, isSearchOpen, setIsSearchOpen } =
     useSearch();
+
   const navigate = useNavigate();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -68,11 +80,13 @@ function TopNavbar() {
     };
 
     const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setIsProfileOpen(false);
-        setIsNotificationsOpen(false);
-        setIsSearchOpen(false);
+      if (event.key !== "Escape") {
+        return;
       }
+
+      setIsProfileOpen(false);
+      setIsNotificationsOpen(false);
+      setIsSearchOpen(false);
     };
 
     document.addEventListener("mousedown", handleOutsideClick);
@@ -102,8 +116,34 @@ function TopNavbar() {
     setIsSearchOpen(false);
   };
 
+  const handleSearchKeyDown = (event) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+
+    const query = searchQuery.trim().toLowerCase();
+
+    if (!query) {
+      return;
+    }
+
+    navigate(`/${query}`);
+    setIsSearchOpen(false);
+  };
+
   return (
     <header className={styles.topNavbar}>
+      <div className={styles.metricsArea}>
+        <SystemStatus
+          loading={metricsLoading}
+          error={metricsError}
+          responseTime={metricsResponseTime}
+          metrics={metrics}
+        />
+      </div>
+
       <div className={styles.actions}>
         <div ref={searchRef} className={styles.searchWrapper}>
           {isSearchOpen && (
@@ -119,14 +159,7 @@ function TopNavbar() {
                 type="search"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    if (searchQuery.trim()) {
-                      navigate(`/${searchQuery.trim().toLowerCase()}`);
-                    }
-                  }
-                }}
+                onKeyDown={handleSearchKeyDown}
                 placeholder="Buscar en el laboratorio..."
                 aria-label="Buscar en el laboratorio"
                 autoFocus
@@ -139,7 +172,7 @@ function TopNavbar() {
                   onClick={() => setSearchQuery("")}
                   aria-label="Limpiar búsqueda"
                 >
-                  <Search size={15} strokeWidth={1.8} aria-hidden="true" />
+                  <X size={15} strokeWidth={1.8} aria-hidden="true" />
                 </button>
               )}
             </div>
@@ -203,7 +236,6 @@ function TopNavbar() {
             >
               <div className={styles.dropdownHeader}>
                 <h2>Notificaciones</h2>
-
                 <span>{unreadNotifications} nuevas</span>
               </div>
 

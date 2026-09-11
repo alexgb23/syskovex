@@ -6,7 +6,7 @@ import {
   ServerCog,
   ShieldCheck,
 } from "lucide-react";
-import SystemStatus from "../../../../components/SystemStatus/SystemStatus";
+
 import styles from "./HeroSection.module.css";
 
 const heroStats = [
@@ -36,7 +36,7 @@ const heroStats = [
   },
 ];
 
-function HeroSection({ loading, error, responseTime }) {
+function HeroSection() {
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
       <div className={styles.heroContent}>
@@ -101,63 +101,53 @@ function HeroSection({ loading, error, responseTime }) {
       </div>
 
       <div className={styles.heroVisual} aria-hidden="true">
-        {/* SystemStatus: esquina superior derecha, sutil */}
-        <div className={styles.systemStatusWrapper}>
-          <SystemStatus
-            loading={loading}
-            error={error}
-            responseTime={responseTime}
-          />
-        </div>
-
         <picture>
-          {/* Móvil: hasta 639 px */}
           <source
             media="(max-width: 39.99rem)"
             type="image/avif"
             srcSet="/img_hero/img_hero_lab_480_avif.avif"
           />
+
           <source
             media="(max-width: 39.99rem)"
             type="image/webp"
             srcSet="/img_hero/img_hero_lab_480_webp.webp"
           />
 
-          {/* Tablet: 640 px a 1023 px */}
           <source
             media="(max-width: 63.99rem)"
             type="image/avif"
             srcSet="/img_hero/img_hero_lab_768_avif.avif"
           />
+
           <source
             media="(max-width: 63.99rem)"
             type="image/webp"
             srcSet="/img_hero/img_hero_lab_768_webp.webp"
           />
 
-          {/* Escritorio: 1024 px a 1439 px */}
           <source
             media="(max-width: 89.99rem)"
             type="image/avif"
             srcSet="/img_hero/img_hero_lab_1200_avif.avif"
           />
+
           <source
             media="(max-width: 89.99rem)"
             type="image/webp"
             srcSet="/img_hero/img_hero_lab_1200_webp.webp"
           />
 
-          {/* Escritorio grande: desde 1440 px */}
           <source
             type="image/avif"
             srcSet="/img_hero/img_hero_lab_1600_avif.avif"
           />
+
           <source
             type="image/webp"
             srcSet="/img_hero/img_hero_lab_1600_webp.webp"
           />
 
-          {/* Fallback para navegadores sin AVIF/WebP */}
           <img
             src="/img_hero/img_hero_lab_1600_webp.webp"
             alt=""

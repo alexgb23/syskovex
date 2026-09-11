@@ -14,7 +14,6 @@
     var(--color-main);
 }
 
-
 .heroContent {
   position: relative;
   z-index: 2;
@@ -25,14 +24,12 @@
   padding: clamp(1.5rem, 5vw, 2.5rem);
 }
 
-
 .eyebrow {
   color: var(--color-primary-hover);
   font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   font-weight: 600;
   letter-spacing: 0.08em;
 }
-
 
 .title {
   max-width: 100%;
@@ -45,12 +42,10 @@
   text-wrap: balance;
 }
 
-
 .title span {
   display: block;
   color: var(--color-primary);
 }
-
 
 .description {
   max-width: 31rem;
@@ -60,8 +55,8 @@
   line-height: 1.6;
 }
 
+/* Estadísticas del laboratorio */
 
-/* Métricas */
 .stats {
   max-width: 34rem;
   display: grid;
@@ -71,10 +66,8 @@
   background: transparent;
 }
 
-
 .stat {
   --stat-accent: var(--color-primary-hover);
-
 
   min-width: 0;
   display: flex;
@@ -84,13 +77,11 @@
   padding: 0;
 }
 
-
 .statContent {
   min-width: 0;
   display: grid;
   gap: 0.15rem;
 }
-
 
 .statIcon {
   width: clamp(1rem, 1.3vw, 1.35rem);
@@ -103,7 +94,6 @@
   );
 }
 
-
 .stat strong {
   overflow: hidden;
   color: var(--stat-accent);
@@ -112,7 +102,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 
 .stat span {
   overflow: hidden;
@@ -123,26 +112,23 @@
   white-space: nowrap;
 }
 
-
 .cyan {
   --stat-accent: #00b8ff;
 }
-
 
 .blue {
   --stat-accent: #3b82f6;
 }
 
-
 .purple {
   --stat-accent: #a78bfa;
 }
-
 
 .teal {
   --stat-accent: #16d7d1;
 }
 
+/* Acciones */
 
 .actions {
   display: flex;
@@ -150,7 +136,6 @@
   gap: 0.75rem;
   margin-top: 1.5rem;
 }
-
 
 .primaryButton,
 .secondaryButton {
@@ -173,7 +158,6 @@
     transform var(--transition-fast);
 }
 
-
 .primaryButton {
   background: linear-gradient(
     135deg,
@@ -184,7 +168,6 @@
   box-shadow: var(--shadow-glow);
 }
 
-
 .primaryButton:hover {
   background: linear-gradient(
     135deg,
@@ -194,13 +177,11 @@
   transform: translateY(-0.125rem);
 }
 
-
 .secondaryButton {
   border-color: var(--color-border);
   background: var(--color-surface);
   color: var(--color-text-muted);
 }
-
 
 .secondaryButton:hover {
   border-color: var(--color-primary);
@@ -209,15 +190,14 @@
   transform: translateY(-0.125rem);
 }
 
-
 .buttonIcon {
   width: clamp(0.875rem, 1vw, 1.1rem);
   height: clamp(0.875rem, 1vw, 1.1rem);
   flex: 0 0 auto;
 }
 
+/* Imagen del hero */
 
-/* Imagen del Hero */
 .heroVisual {
   position: relative;
   min-height: 14rem;
@@ -228,14 +208,11 @@
   contain: layout paint;
 }
 
-
-/* picture es el contenedor directo del img */
 .heroVisual picture {
   display: block;
   width: 100%;
   height: 100%;
 }
-
 
 .heroVisual::after {
   position: absolute;
@@ -256,7 +233,6 @@
     );
 }
 
-
 .heroVisual img {
   display: block;
   width: 100%;
@@ -266,25 +242,6 @@
   opacity: 0.94;
 }
 
-/* SystemStatus: esquina superior derecha sobre la imagen */
-.systemStatusWrapper {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 10;
-  pointer-events: auto;
-}
-
-/* Hacerlo más sutil en móviles */
-@media (max-width: 39.99rem) {
-  .systemStatusWrapper {
-    top: 8px;
-    right: 8px;
-    transform: scale(0.9);
-    transform-origin: top right;
-  }
-}
-
 @media (min-width: 40rem) {
   .stats {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -292,25 +249,23 @@
   }
 }
 
-
 @media (min-width: 64rem) {
   .hero {
     min-height: 25rem;
-    grid-template-columns: minmax(22rem, 0.92fr) minmax(30rem, 1.08fr);
+    grid-template-columns:
+      minmax(22rem, 0.92fr)
+      minmax(30rem, 1.08fr);
   }
-
 
   .heroContent {
     padding: clamp(1.75rem, 3vw, 2.75rem);
   }
-
 
   .heroVisual {
     min-height: 25rem;
     aspect-ratio: auto;
     order: initial;
   }
-
 
   .heroVisual::after {
     background:
@@ -325,12 +280,7 @@
         rgb(5 9 18 / 0.18)
       );
   }
-    .systemStatusWrapper {
-    top: 16px;
-    right: 16px;
-  }
 }
-
 
 @media (min-width: 90rem) {
   .hero,

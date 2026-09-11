@@ -1,6 +1,7 @@
-// src/layouts/footer/Footer.jsx
+// src/components/layout/footer/Footer.jsx
+
 import { Zap, Thermometer, MapPin, ShieldCheck } from "lucide-react";
-import { usePortfolioDataContext } from "../MainLayout";
+import { useHomeLabDataContext } from "../MainLayout";
 import styles from "./Footer.module.css";
 
 const footerMetrics = [
@@ -33,7 +34,7 @@ const footerMetrics = [
 const allowedPlatforms = ["github", "linkedin", "email"];
 
 function Footer({ className = "" }) {
-  const { socialLinks, loading, error } = usePortfolioDataContext();
+  const { socialLinks, socialLoading, socialError } = useHomeLabDataContext();
 
   const filteredLinks = Array.isArray(socialLinks)
     ? socialLinks
@@ -44,7 +45,7 @@ function Footer({ className = "" }) {
     : [];
 
   const hasLinks = filteredLinks.length > 0;
-  const showPlaceholders = loading && !hasLinks;
+  const showPlaceholders = socialLoading && !hasLinks;
 
   return (
     <footer className={`${styles.footer} ${className}`}>
@@ -123,6 +124,10 @@ function Footer({ className = "" }) {
             );
           })
         )}
+
+        {!socialLoading && socialError && (
+          <span className={styles.error}>Redes no disponibles</span>
+        )}
       </nav>
     </footer>
   );
@@ -136,7 +141,7 @@ function GitHubIcon({ className = "" }) {
       fill="currentColor"
       aria-hidden="true"
     >
-      <path d="M12 2C6.477 2 2 6.589 2 12.253c0 4.53 2.865 8.37 6.839 9.727.5.096.682-.222.682-.493 0-.244-.009-1.05-.014-1.905-2.782.619-3.369-1.214-3.369-1.214-.455-1.186-1.11-1.502-1.11-1.502-.908-.639.069-.626.069-.626 1.004.072 1.532 1.058 1.532 1.058.892 1.568 2.34 1.115 2.91.853.09-.666.348-1.115.634-1.371-2.221-.261-4.556-1.143-4.556-5.086 0-1.124.391-2.043 1.03-2.764-.104-.261-.446-1.311.098-2.733 0 0 .84-.276 2.75 1.056A9.314 9.314 0 0 1 12 6.85c.85.004 1.706.118 2.505.347 1.909-1.332 2.748-1.056 2.748-1.056.545 1.422.203 2.472.1 2.733.64.721 1.028 1.64 1.028 2.764 0 3.953-2.34 4.822-4.568 5.078.358.32.676.947.676 1.909 0 1.378-.012 2.488-.012 2.827 0 .274.18.594.688.493C19.138 20.619 22 16.782 22 12.253 22 6.589 17.523 2 12 2Z" />
+      <path d="M12 2C6.477 2 2 6.589 2 12.253c0 4.53 2.865 8.37 6.839 9.727.5.096.682-.222.682-.493 0-.244-.009-1.05-.014-1.905-2.782.619-3.369-1.214-3.369-1.214-.455-1.186-1.11-1.502-1.11-1.502-.908-.639.069-.626.069-.626 1.004.072 1.532 1.058 1.532 1.058.892 1.568 2.34 1.115 2.91.853.09-.666.348-1.115.634-1.371-2.221-.261-4.556-1.143-4.556-5.086 0-1.124.391-2.043 1.03-2.764-.104-.261-.446-1.311.098-2.733 0 0 .84-.276 2.75 1.056A9.314 9.314 0 0 1 12 6.85c.85.004 1.706.118 2.505.347 1.909-1.332 2.748-1.056 2.748-1.056.545 1.422.203 2.472.1 2.733.64.721 1.028 1.64 1.028 2.764 0 3.953-2.34 4.822-4.568 5.078.358.32.676.947.676 1.909 0 .274.18.594.688.493C19.138 20.619 22 16.782 22 12.253 22 6.589 17.523 2 12 2Z" />
     </svg>
   );
 }
@@ -162,7 +167,7 @@ function MailIcon({ className = "" }) {
       fill="currentColor"
       aria-hidden="true"
     >
-      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-1-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z" />
+      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z" />
     </svg>
   );
 }

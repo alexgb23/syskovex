@@ -1,17 +1,18 @@
-// src/hooks/pages/usePortfolioHome.js
 import useAsyncResource from "../core/useAsyncResource";
-import { portfolioService } from "../../services/api";
+import { homeLabResumenService } from "../../services/api";
 
 const initialValue = {
+  status: "success",
+  service: "home-lab-resumen",
   social_links: [],
 };
 
-export default function usePortfolioHome(enabled = true) {
+export default function useHomeLabResumen(enabled = true) {
   const { data, loading, error, isRefreshing, responseTime } = useAsyncResource(
-    portfolioService.getHomeData,
+    homeLabResumenService.getResumen,
     initialValue,
     [],
-    "Social Links",
+    "Home Lab Resumen",
     enabled,
   );
 
@@ -24,6 +25,6 @@ export default function usePortfolioHome(enabled = true) {
     loading,
     error,
     isRefreshing,
-    responseTime, // ✅ AÑADIR ESTO
+    responseTime,
   };
 }

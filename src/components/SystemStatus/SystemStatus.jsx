@@ -1,15 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Cloud,
-  Database,
-  Info,
-  MonitorCog,
-  Server,
-  X,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Info, MonitorCog, X } from "lucide-react";
 
 import styles from "./SystemStatus.module.css";
 
@@ -44,25 +35,15 @@ function formatValue(value) {
 }
 
 function statusLabel(status) {
+  if (status === "healthy") return "Saludable";
   if (status === "available") return "Disponible";
   if (status === "connected") return "Conectado";
   if (status === "unavailable") return "No disponible";
   if (status === "disconnected") return "Desconectado";
   if (status === "not_configured") return "No configurado";
+  if (status === "not_suspended") return "Activo";
 
   return status || "Sin datos";
-}
-
-function statusClass(status) {
-  if (status === "available" || status === "connected") {
-    return styles.statusOk;
-  }
-
-  if (status === "unavailable" || status === "disconnected") {
-    return styles.statusError;
-  }
-
-  return styles.statusUnknown;
 }
 
 function clampPercent(value) {
@@ -85,6 +66,91 @@ function latencyPercent(value) {
   return clampPercent((number / 1000) * 100);
 }
 
+function createValue(label, value) {
+  return {
+    label,
+    value: formatValue(value),
+  };
+}
+
+function ServiceIcon({ type, size = 30 }) {
+  if (type === "cloudflare") {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 64 64"
+        role="img"
+        aria-label="Cloudflare"
+        fill="none"
+      >
+        <path
+          d="M46.8 43.5H18.2c-5.2 0-9.4-3.9-9.4-8.8 0-4.7 3.8-8.5 8.6-8.8C19.3 18.7 25.6 14 33 14c8.2 0 14.9 5.7 16.3 13.4.1 0 .3 0 .4 0 5.3 0 9.6 3.6 9.6 8.1s-4.3 8-9.6 8Z"
+          fill="currentColor"
+        />
+
+        <path
+          d="M18 43.5h30.5"
+          stroke="#081526"
+          strokeWidth="4"
+          strokeLinecap="round"
+          opacity=".7"
+        />
+      </svg>
+    );
+  }
+
+  if (type === "render") {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 64 64"
+        role="img"
+        aria-label="Render"
+        fill="none"
+      >
+        <path
+          d="M18 13v38M18 14h17c8 0 13 4.4 13 11s-5 11-13 11H18m17 0 13 15"
+          stroke="currentColor"
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
+  if (type === "database") {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 64 64"
+        role="img"
+        aria-label="PostgreSQL"
+        fill="none"
+      >
+        <ellipse cx="32" cy="15" rx="18" ry="8" fill="currentColor" />
+
+        <path
+          d="M14 15v17c0 4.4 8.1 8 18 8s18-3.6 18-8V15"
+          stroke="currentColor"
+          strokeWidth="5"
+        />
+
+        <path
+          d="M14 32v17c0 4.4 8.1 8 18 8s18-3.6 18-8V32"
+          stroke="currentColor"
+          strokeWidth="5"
+        />
+      </svg>
+    );
+  }
+
+  return <MonitorCog size={size} strokeWidth={1.8} aria-label="Runtime" />;
+}
+
 function getMetricSlides(metrics) {
   const runtime = metrics?.runtime ?? {};
   const database = metrics?.database ?? {};
@@ -104,12 +170,14 @@ function getMetricSlides(metrics) {
     {
       id: "runtime",
       label: "Runtime",
+      serviceName: metrics?.service ?? "portfolio-backend",
       subtitle: `${runtime.php_version ?? "PHP"} · ${
         runtime.laravel_version ?? "Laravel"
       }`,
-      Icon: MonitorCog,
+      iconType: "runtime",
       accent: "cyan",
       status: metrics?.status,
+
       primary: {
         label: "Memoria",
         value: memoryPercent,
@@ -119,12 +187,15 @@ function getMetricSlides(metrics) {
             ? `${runtime.memory_used_mb} MB usados`
             : "Sin datos",
       },
+
       values: [
-        ["PHP", runtime.php_version],
-        ["Laravel", runtime.laravel_version],
-        ["Entorno", runtime.environment],
+        createValue("PHP", runtime.php_version),
+        createValue("Laravel", runtime.laravel_version),
+        createValue("Entorno", runtime.environment),
       ],
+
       details: [
+        ["Servicio", metrics?.service],
         ["PHP", runtime.php_version],
         ["Laravel", runtime.laravel_version],
         ["Entorno", runtime.environment],
@@ -150,49 +221,61 @@ function getMetricSlides(metrics) {
         ["Límite", runtime.memory_limit],
       ],
     },
+
     {
       id: "database",
       label: "PostgreSQL",
-      subtitle: "Neon Database",
-      Icon: Database,
+      serviceName: database.name ?? "PostgreSQL",
+      subtitle: "Base de datos",
+      iconType: "database",
       accent: "green",
       status: database.status,
+
       primary: {
         label: "Latencia",
         value: latencyPercent(database.latency_ms),
         display: formatMs(database.latency_ms),
         caption: statusLabel(database.status),
       },
+
       values: [
-        ["Estado", statusLabel(database.status)],
-        ["Driver", database.driver],
-        ["Latencia", formatMs(database.latency_ms)],
+        createValue("Estado", statusLabel(database.status)),
+        createValue("Driver", database.driver),
+        createValue("Latencia", formatMs(database.latency_ms)),
       ],
+
       details: [
+        ["Servicio", database.name],
         ["Estado", statusLabel(database.status)],
         ["Driver", database.driver],
         ["Latencia", formatMs(database.latency_ms)],
       ],
     },
+
     {
       id: "cloudflare",
       label: "Cloudflare",
+      serviceName: cloudflareApi.name ?? "Cloudflare",
       subtitle: cloudflare.colo ?? "Proxy y API",
-      Icon: Cloud,
+      iconType: "cloudflare",
       accent: "orange",
       status: cloudflareApi.status,
+
       primary: {
         label: "Latencia",
         value: latencyPercent(cloudflareApi.latency_ms),
         display: formatMs(cloudflareApi.latency_ms),
         caption: statusLabel(cloudflareApi.status),
       },
+
       values: [
-        ["API", statusLabel(cloudflareApi.status)],
-        ["Centro", cloudflare.colo],
-        ["Proxy", cloudflare.proxy_detected ? "Activo" : "No"],
+        createValue("API", statusLabel(cloudflareApi.status)),
+        createValue("Centro", cloudflare.colo),
+        createValue("Proxy", cloudflare.proxy_detected ? "Activo" : "No"),
       ],
+
       details: [
+        ["Servicio", cloudflareApi.name],
         ["API", statusLabel(cloudflareApi.status)],
         ["Proxy", cloudflare.proxy_detected ? "Activo" : "No detectado"],
         ["Centro", cloudflare.colo],
@@ -203,27 +286,32 @@ function getMetricSlides(metrics) {
         ["Latencia API", formatMs(cloudflareApi.latency_ms)],
       ],
     },
+
     {
       id: "render",
       label: "Render",
-      subtitle: render.name ?? "Web service",
-      Icon: Server,
+      serviceName: render.name ?? "Render",
+      subtitle: render.type ?? "Web service",
+      iconType: "render",
       accent: "purple",
       status: render.status,
+
       primary: {
         label: "Latencia",
         value: latencyPercent(render.latency_ms),
         display: formatMs(render.latency_ms),
         caption: statusLabel(render.status),
       },
+
       values: [
-        ["Estado", statusLabel(render.status)],
-        ["Servicio", render.name],
-        ["Tipo", render.type],
+        createValue("Estado", statusLabel(render.status)),
+        createValue("Servicio", render.name),
+        createValue("Tipo", render.type),
       ],
+
       details: [
-        ["Estado", statusLabel(render.status)],
         ["Servicio", render.name],
+        ["Estado", statusLabel(render.status)],
         ["Tipo", render.type],
         ["Suspendido", render.suspended],
         ["Suspenders", render.suspenders],
@@ -265,7 +353,13 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
   const closeButtonRef = useRef(null);
   const triggerRef = useRef(null);
 
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+  const touchStartTime = useRef(null);
+
   const slides = useMemo(() => getMetricSlides(metrics), [metrics]);
+
+  const currentSlide = slides[activeSlide] ?? slides[0];
 
   useEffect(() => {
     if (!loading) {
@@ -306,6 +400,7 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     }
 
     const previousOverflow = document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
 
     const handleEscape = (event) => {
@@ -327,7 +422,6 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
   }, [isModalOpen]);
 
   const displayTime = responseTime ?? elapsed;
-  const currentSlide = slides[activeSlide] ?? slides[0];
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -347,6 +441,48 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     setActiveSlide((previous) =>
       previous === slides.length - 1 ? 0 : previous + 1,
     );
+  };
+
+  const handleTouchStart = (event) => {
+    const touch = event.touches[0];
+
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    touchStartTime.current = Date.now();
+  };
+
+  const handleTouchEnd = (event) => {
+    if (
+      touchStartX.current == null ||
+      touchStartY.current == null ||
+      touchStartTime.current == null
+    ) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+
+    const deltaX = touch.clientX - touchStartX.current;
+    const deltaY = touch.clientY - touchStartY.current;
+    const duration = Date.now() - touchStartTime.current;
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+    touchStartTime.current = null;
+
+    const minimumDistance = 42;
+    const isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+    const isFastEnough = duration < 700;
+
+    if (!isHorizontal || !isFastEnough || Math.abs(deltaX) < minimumDistance) {
+      return;
+    }
+
+    if (deltaX < 0) {
+      goNext();
+    } else {
+      goPrevious();
+    }
   };
 
   const handleModalKeyDown = (event) => {
@@ -395,7 +531,9 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
           role="dialog"
           aria-modal="true"
           aria-labelledby="system-status-title"
-          onMouseDown={(event) => event.stopPropagation()}
+          onMouseDown={(event) => {
+            event.stopPropagation();
+          }}
           onKeyDown={handleModalKeyDown}
         >
           <header className={styles.modalHeader}>
@@ -421,43 +559,36 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
           </header>
 
           <div className={styles.modalGrid}>
-            {slides.map((slide) => {
-              const SlideIcon = slide.Icon;
+            {slides.map((slide) => (
+              <article className={styles.modalCard} key={slide.id}>
+                <div
+                  className={`${styles.modalCardTitle} ${styles[slide.accent]}`}
+                >
+                  <ServiceIcon type={slide.iconType} size={20} />
 
-              return (
-                <article className={styles.modalCard} key={slide.id}>
-                  <div
-                    className={`${styles.modalCardTitle} ${
-                      styles[slide.accent]
-                    }`}
-                  >
-                    <SlideIcon size={20} strokeWidth={1.8} aria-hidden="true" />
+                  <div>
+                    <h3>{slide.label}</h3>
+                    <span>{slide.serviceName}</span>
+                  </div>
+                </div>
 
-                    <div>
-                      <h3>{slide.label}</h3>
-                      <span>{slide.subtitle}</span>
+                <div className={styles.modalRings}>
+                  <MetricRing {...slide.primary} accent={slide.accent} />
+                </div>
+
+                <dl className={styles.detailsList}>
+                  {slide.details.map(([label, value]) => (
+                    <div
+                      className={styles.detailRow}
+                      key={`${slide.id}-${label}`}
+                    >
+                      <dt>{label}</dt>
+                      <dd>{formatValue(value)}</dd>
                     </div>
-                  </div>
-
-                  <div className={styles.modalRings}>
-                    <MetricRing {...slide.primary} accent={slide.accent} />
-                  </div>
-
-                  <dl className={styles.detailsList}>
-                    {slide.details.map(([label, value]) => (
-                      <div
-                        className={styles.detailRow}
-                        key={`${slide.id}-${label}`}
-                      >
-                        <dt>{label}</dt>
-
-                        <dd>{formatValue(value)}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </article>
-              );
-            })}
+                  ))}
+                </dl>
+              </article>
+            ))}
           </div>
 
           <footer className={styles.modalFooter}>
@@ -531,12 +662,24 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     return null;
   }
 
-  const { Icon, label, subtitle, primary, values, accent, status } =
-    currentSlide;
+  const {
+    iconType,
+    label,
+    serviceName,
+    subtitle,
+    primary,
+    values,
+    accent,
+    status,
+  } = currentSlide;
 
   return (
     <>
-      <div className={`${styles.container} ${styles.metricBar}`}>
+      <div
+        className={`${styles.container} ${styles.metricBar}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <button
           type="button"
           className={styles.sliderButton}
@@ -555,7 +698,7 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
         >
           <div className={styles.identity}>
             <div className={`${styles.logoBox} ${styles[accent]}`}>
-              <Icon size={30} strokeWidth={1.8} aria-hidden="true" />
+              <ServiceIcon type={iconType} size={30} />
             </div>
 
             <div className={styles.identityText}>
@@ -569,10 +712,10 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
                 </span>
               </div>
 
-              <strong>portfolio-backend</strong>
+              <strong>{serviceName}</strong>
 
               <small>
-                {subtitle} · {statusLabel(status)}
+                {label} · {subtitle} · {statusLabel(status)}
               </small>
             </div>
           </div>
@@ -582,16 +725,17 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
           </div>
 
           <div className={styles.valueGrid}>
-            {values.map(([valueLabel, value]) => (
+            {values.map(({ label: valueLabel, value }) => (
               <span className={styles.valueItem} key={valueLabel}>
                 <small>{valueLabel}</small>
-                <strong>{formatValue(value)}</strong>
+                <strong>{value}</strong>
               </span>
             ))}
           </div>
 
           <div className={styles.requestMetric}>
             <small>REQUEST</small>
+
             <strong>{formatMs(metrics?.request_duration_ms)}</strong>
           </div>
         </button>

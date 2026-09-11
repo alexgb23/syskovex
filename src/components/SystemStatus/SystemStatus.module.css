@@ -1,37 +1,58 @@
+/* =========================================================
+   BASE
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 .container {
   width: 100%;
   min-width: 0;
+  max-width: 100%;
   color: var(--color-text);
 }
 
 /* =========================================================
-   ESTADOS DE CARGA Y ERROR
+   FONDOS COMUNES
    ========================================================= */
 
 .loadingContainer,
 .errorContainer,
 .metricBar {
   box-sizing: border-box;
+
   border: 1px solid rgb(41 92 145 / 0.65);
-  border-radius: clamp(1rem, 2vw, 1.35rem);
+  border-radius: clamp(0.9rem, 2vw, 1.35rem);
+
   background:
     linear-gradient(
       135deg,
       rgb(8 21 38 / 0.98),
       rgb(5 13 26 / 0.98)
     );
+
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.04),
     0 0 1.5rem rgb(0 142 255 / 0.08);
 }
 
+/* =========================================================
+   LOADING Y ERROR
+   ========================================================= */
+
 .loadingContainer,
 .errorContainer {
+  width: 100%;
   min-height: 4.4rem;
+
   display: grid;
   align-content: center;
   gap: 0.45rem;
-  padding: 0.75rem 1rem;
+
+  padding: 0.7rem 0.8rem;
 }
 
 .loadingContainer {
@@ -45,21 +66,23 @@
 .loadingHeader,
 .errorHeader {
   min-width: 0;
+
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.6rem;
 }
 
 .loadingText,
 .errorHeader div {
   min-width: 0;
+
   display: grid;
   gap: 0.12rem;
 }
 
 .loadingText strong,
 .errorHeader strong {
-  font-size: clamp(0.62rem, 1vw, 0.76rem);
+  font-size: clamp(0.6rem, 1vw, 0.76rem);
 }
 
 .loadingText strong {
@@ -68,17 +91,23 @@
 
 .loadingText span,
 .errorHeader span {
+  min-width: 0;
+
   color: var(--color-text-muted);
-  font-size: clamp(0.5rem, 0.75vw, 0.62rem);
+  font-size: clamp(0.48rem, 0.75vw, 0.62rem);
   line-height: 1.3;
+
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .loadingTime {
   margin-left: auto;
   flex: 0 0 auto;
+
   color: var(--color-text-muted);
-  font-size: clamp(0.5rem, 0.75vw, 0.62rem);
+  font-size: clamp(0.48rem, 0.75vw, 0.62rem);
+
   white-space: nowrap;
 }
 
@@ -89,66 +118,89 @@
 .spinner {
   width: 1.05rem;
   height: 1.05rem;
+
   flex: 0 0 1.05rem;
+
   border: 2px solid rgb(251 191 36 / 0.25);
   border-top-color: #fbbf24;
   border-radius: 50%;
+
   animation: spin 0.8s linear infinite;
 }
 
 .progress {
   width: 100%;
   height: 0.2rem;
+
   overflow: hidden;
   border-radius: 999px;
+
   background: rgb(251 191 36 / 0.13);
 }
 
 .progressBar {
   height: 100%;
+
   border-radius: inherit;
   background: linear-gradient(90deg, #f59e0b, #fbbf24);
+
   transition: width 100ms linear;
 }
 
 /* =========================================================
    BARRA PRINCIPAL
+   BASE MÓVIL
    ========================================================= */
 
 .metricBar {
-  width: max-content;
+  width: 100%;
   min-width: 0;
-  max-width: max-content;
+  max-width: 100%;
+  min-height: auto;
   height: auto;
 
   display: grid;
-  grid-template-columns:
-    max-content
-    max-content
-    max-content;
+  grid-template-columns: minmax(0, 1fr);
 
   align-items: center;
-  gap: clamp(0.65rem, 1vw, 1rem);
+  gap: 0;
 
-  padding: clamp(0.65rem, 1vw, 0.9rem);
+  padding: clamp(0.6rem, 2.5vw, 0.85rem)
+    clamp(0.45rem, 2vw, 0.7rem);
 
-  overflow: visible;
+  overflow: hidden;
+
+  touch-action: pan-x;
+  cursor: grab;
 }
 
+.metricBar:active {
+  cursor: grabbing;
+}
+
+/* =========================================================
+   CONTENIDO PRINCIPAL
+   ========================================================= */
+
 .metricMain {
-  width: max-content;
+  width: 100%;
   min-width: 0;
-  max-width: max-content;
+  max-width: 100%;
 
   display: grid;
+
   grid-template-columns:
-    max-content
-    max-content
-    max-content
-    max-content;
+    minmax(0, 1fr)
+    auto;
+
+  grid-template-areas:
+    "identity primary"
+    "values values"
+    "request request";
 
   align-items: center;
-  gap: clamp(0.75rem, 1.4vw, 1.35rem);
+  gap: clamp(0.6rem, 2vw, 0.85rem)
+    clamp(0.35rem, 1.5vw, 0.6rem);
 
   border: 0;
   background: transparent;
@@ -156,170 +208,14 @@
 
   cursor: pointer;
   padding: 0;
+
   text-align: left;
 }
 
 .metricMain:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 3px;
-  border-radius: 0.85rem;
-}
-
-/* =========================================================
-   IDENTIDAD
-   ========================================================= */
-
-.identity {
-  width: max-content;
-  min-width: max-content;
-
-  display: flex;
-  align-items: center;
-  gap: clamp(0.45rem, 0.8vw, 0.75rem);
-}
-
-.logoBox {
-  width: clamp(2.25rem, 3.5vw, 3rem);
-  height: clamp(2.25rem, 3.5vw, 3rem);
-
-  flex: 0 0 auto;
-
-  display: grid;
-  place-items: center;
-
-  border: 1px solid currentColor;
-  border-radius: clamp(0.65rem, 1vw, 0.9rem);
-
-  background: rgb(0 184 255 / 0.08);
-
-  box-shadow:
-    0 0 1.2rem currentColor,
-    inset 0 0 0.7rem rgb(255 255 255 / 0.04);
-}
-
-.logoBox svg {
-  width: clamp(1.35rem, 2vw, 1.8rem);
-  height: clamp(1.35rem, 2vw, 1.8rem);
-}
-
-.identityText {
-  width: max-content;
-  min-width: max-content;
-
-  display: grid;
-  gap: 0.12rem;
-}
-
-.healthLine {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-
-  color: #34d399;
-  font-size: clamp(0.46rem, 0.65vw, 0.58rem);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-
-  white-space: nowrap;
-}
-
-.healthDot {
-  width: clamp(0.34rem, 0.55vw, 0.48rem);
-  height: clamp(0.34rem, 0.55vw, 0.48rem);
-
-  flex: 0 0 auto;
-
-  border-radius: 50%;
-  background: #34d399;
-  box-shadow: 0 0 0.55rem #34d399;
-}
-
-.identityText > strong {
-  color: #f5f9ff;
-  font-size: clamp(0.64rem, 1vw, 0.92rem);
-  line-height: 1.1;
-  white-space: nowrap;
-}
-
-.identityText > small {
-  color: var(--color-text-subtle);
-  font-size: clamp(0.44rem, 0.65vw, 0.58rem);
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-/* =========================================================
-   MÉTRICA PRINCIPAL
-   ========================================================= */
-
-.primaryMetric {
-  width: max-content;
-  min-width: max-content;
-
-  display: grid;
-  place-items: center;
-}
-
-.primaryMetric .ring {
-  width: clamp(3rem, 5vw, 4rem);
-  height: clamp(3rem, 5vw, 4rem);
-}
-
-.primaryMetric .ringInner {
-  width: clamp(2.35rem, 4vw, 3.15rem);
-  height: clamp(2.35rem, 4vw, 3.15rem);
-}
-
-.primaryMetric .ringInner strong {
-  font-size: clamp(0.6rem, 1vw, 0.78rem);
-}
-
-/* =========================================================
-   MÉTRICAS SECUNDARIAS
-   ========================================================= */
-
-.valueGrid {
-  width: max-content;
-  min-width: max-content;
-
-  display: grid;
-  grid-template-columns: repeat(3, max-content);
-  gap: clamp(0.65rem, 1vw, 1rem);
-}
-
-.valueItem,
-.requestMetric {
-  width: max-content;
-  min-width: max-content;
-
-  display: grid;
-  gap: 0.16rem;
-
-  border-left: 1px solid rgb(64 111 163 / 0.28);
-  padding-left: clamp(0.45rem, 1vw, 0.9rem);
-}
-
-.valueItem small,
-.requestMetric small {
-  color: var(--color-text-subtle);
-  font-size: clamp(0.43rem, 0.65vw, 0.56rem);
-  letter-spacing: 0.04em;
-  line-height: 1.2;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.valueItem strong,
-.requestMetric strong {
-  color: #dbeaff;
-  font-size: clamp(0.58rem, 0.95vw, 0.78rem);
-  line-height: 1.15;
-  white-space: nowrap;
-}
-
-.requestMetric {
-  width: max-content;
-  min-width: max-content;
+  border-radius: 0.8rem;
 }
 
 /* =========================================================
@@ -327,12 +223,14 @@
    ========================================================= */
 
 .sliderButton {
+  display: none;
+
   width: clamp(1.9rem, 3vw, 2.35rem);
   height: clamp(1.9rem, 3vw, 2.35rem);
 
-  flex: 0 0 auto;
+  align-self: center;
+  justify-self: center;
 
-  display: grid;
   place-items: center;
 
   border: 1px solid rgb(78 125 180 / 0.45);
@@ -360,12 +258,210 @@
 }
 
 /* =========================================================
+   IDENTIDAD
+   ========================================================= */
+
+.identity {
+  grid-area: identity;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: clamp(0.4rem, 2vw, 0.7rem);
+}
+
+.logoBox {
+  width: clamp(2.1rem, 11vw, 2.55rem);
+  height: clamp(2.1rem, 11vw, 2.55rem);
+
+  flex: 0 0 auto;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid currentColor;
+  border-radius: clamp(0.6rem, 2vw, 0.85rem);
+
+  background: rgb(0 184 255 / 0.08);
+
+  box-shadow:
+    0 0 1rem currentColor,
+    inset 0 0 0.6rem rgb(255 255 255 / 0.04);
+}
+
+.logoBox svg {
+  width: clamp(1.2rem, 6vw, 1.55rem);
+  height: clamp(1.2rem, 6vw, 1.55rem);
+}
+
+.identityText {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  display: grid;
+  gap: 0.12rem;
+}
+
+.healthLine {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+
+  color: #34d399;
+  font-size: clamp(0.42rem, 2vw, 0.56rem);
+  font-weight: 800;
+  letter-spacing: 0.07em;
+
+  white-space: nowrap;
+}
+
+.healthDot {
+  width: clamp(0.32rem, 1.7vw, 0.44rem);
+  height: clamp(0.32rem, 1.7vw, 0.44rem);
+
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0.5rem #34d399;
+}
+
+.identityText > strong,
+.identityText > small {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.identityText > strong {
+  color: #f5f9ff;
+  font-size: clamp(0.58rem, 3.3vw, 0.78rem);
+  line-height: 1.15;
+}
+
+.identityText > small {
+  color: var(--color-text-subtle);
+  font-size: clamp(0.39rem, 1.9vw, 0.53rem);
+  line-height: 1.3;
+}
+
+/* =========================================================
+   MÉTRICA PRINCIPAL
+   ========================================================= */
+
+.primaryMetric {
+  grid-area: primary;
+
+  min-width: 0;
+
+  display: grid;
+  place-items: center;
+  justify-self: end;
+}
+
+.primaryMetric .ring {
+  width: clamp(2.8rem, 15vw, 3.35rem);
+  height: clamp(2.8rem, 15vw, 3.35rem);
+}
+
+.primaryMetric .ringInner {
+  width: clamp(2.15rem, 11.5vw, 2.65rem);
+  height: clamp(2.15rem, 11.5vw, 2.65rem);
+}
+
+.primaryMetric .ringInner strong {
+  font-size: clamp(0.5rem, 2.5vw, 0.66rem);
+}
+
+/* =========================================================
+   VALUE GRID
+   ========================================================= */
+
+.valueGrid {
+  grid-area: values;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: clamp(0.25rem, 0.8vw, 0.5rem);
+
+  align-items: start;
+}
+
+.valueItem,
+.requestMetric {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  display: grid;
+  gap: 0.12rem;
+
+  border-left: 1px solid rgb(64 111 163 / 0.28);
+  padding-left: clamp(0.25rem, 0.6vw, 0.5rem);
+
+  overflow: hidden;
+}
+
+.valueItem small,
+.valueItem strong,
+.requestMetric small,
+.requestMetric strong {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+
+  text-wrap: balance;
+}
+
+.valueItem small,
+.requestMetric small {
+  color: var(--color-text-subtle);
+
+  font-size: clamp(0.34rem, 0.5vw, 0.46rem);
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+
+  text-transform: uppercase;
+}
+
+.valueItem strong,
+.requestMetric strong {
+  color: #dbeaff;
+
+  font-size: clamp(0.44rem, 0.68vw, 0.6rem);
+  line-height: 1.2;
+}
+
+.requestMetric {
+  grid-area: request;
+}
+
+/* =========================================================
    CÍRCULOS
    ========================================================= */
 
 .ringGroup {
-  width: max-content;
-  min-width: max-content;
+  min-width: 0;
 
   display: grid;
   justify-items: center;
@@ -375,8 +471,8 @@
 .ring {
   --ring-color: #00b8ff;
 
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 3.2rem;
+  height: 3.2rem;
 
   display: grid;
   place-items: center;
@@ -398,8 +494,8 @@
 }
 
 .ringInner {
-  width: 2.55rem;
-  height: 2.55rem;
+  width: 2.5rem;
+  height: 2.5rem;
 
   display: grid;
   place-items: center;
@@ -410,45 +506,36 @@
 
 .ringInner strong {
   color: #f4f8ff;
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   line-height: 1;
   white-space: nowrap;
 }
 
 .ringLabel,
 .ringCaption {
-  max-width: max-content;
+  max-width: 100%;
 
-  font-size: 0.47rem;
-  line-height: 1.2;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .ringLabel {
   color: var(--color-text-muted);
+  font-size: clamp(0.4rem, 1.6vw, 0.5rem);
   font-weight: 800;
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
 .ringCaption {
   color: var(--color-text-subtle);
+  font-size: clamp(0.38rem, 1.5vw, 0.46rem);
+  line-height: 1.2;
 }
 
 /* =========================================================
-   ESTADOS Y COLORES
+   COLORES
    ========================================================= */
-
-.statusOk {
-  color: #34d399 !important;
-}
-
-.statusError {
-  color: #f87171 !important;
-}
-
-.statusUnknown {
-  color: #fbbf24 !important;
-}
 
 .cyan {
   --ring-color: #00b8ff;
@@ -470,6 +557,18 @@
   color: #a78bfa;
 }
 
+.statusOk {
+  color: #34d399 !important;
+}
+
+.statusError {
+  color: #f87171 !important;
+}
+
+.statusUnknown {
+  color: #fbbf24 !important;
+}
+
 /* =========================================================
    MODAL
    ========================================================= */
@@ -485,19 +584,20 @@
   overflow-y: auto;
 
   background: rgb(0 0 0 / 0.76);
-  padding: 1rem;
+  padding: 0.75rem;
   isolation: isolate;
 }
 
 .modal {
-  width: min(100%, 58rem);
-  max-height: min(88dvh, 56rem);
+  width: 100%;
+  max-width: 58rem;
+  max-height: 90dvh;
 
   overflow-y: auto;
   overscroll-behavior: contain;
 
   border: 1px solid rgb(92 145 255 / 0.35);
-  border-radius: 1.25rem;
+  border-radius: 1rem;
 
   background:
     radial-gradient(
@@ -515,7 +615,8 @@
     0 1.5rem 4rem rgb(0 0 0 / 0.5),
     0 0 0 1px rgb(255 255 255 / 0.04);
 
-  padding: 1rem;
+  padding: 0.85rem;
+
   animation: modalEnter 180ms ease-out both;
 }
 
@@ -523,15 +624,15 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.8rem;
 
   border-bottom: 1px solid var(--color-border-soft);
-  padding-bottom: 1rem;
+  padding-bottom: 0.8rem;
 }
 
 .modalEyebrow {
   color: var(--color-primary-hover);
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   font-weight: 700;
   letter-spacing: 0.1em;
 }
@@ -539,19 +640,18 @@
 .modalHeader h2 {
   margin-top: 0.25rem;
   color: var(--color-text);
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 4vw, 1.1rem);
 }
 
 .modalHeader p {
   margin-top: 0.35rem;
   color: var(--color-text-muted);
-  font-size: 0.65rem;
+  font-size: clamp(0.52rem, 2vw, 0.65rem);
 }
 
 .closeButton {
   width: 2rem;
   height: 2rem;
-
   flex: 0 0 2rem;
 
   display: grid;
@@ -576,8 +676,9 @@
 
 .modalGrid {
   display: grid;
-  gap: 0.75rem;
-  padding: 1rem 0;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+  padding: 0.8rem 0;
 }
 
 .modalCard {
@@ -587,32 +688,42 @@
   border-radius: var(--radius-md);
 
   background: rgb(13 22 36 / 0.75);
-  padding: 0.85rem;
+  padding: 0.75rem;
 }
 
 .modalCardTitle {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
 
   border-bottom: 1px solid var(--color-border-soft);
-  padding-bottom: 0.65rem;
+  padding-bottom: 0.6rem;
 }
 
 .modalCardTitle div {
   min-width: 0;
+
   display: grid;
   gap: 0.1rem;
 }
 
+.modalCardTitle h3,
+.modalCardTitle span {
+  min-width: 0;
+  max-width: 100%;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .modalCardTitle h3 {
   color: var(--color-text);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
 }
 
 .modalCardTitle span {
   color: var(--color-text-subtle);
-  font-size: 0.55rem;
+  font-size: 0.52rem;
 }
 
 .modalRings {
@@ -620,31 +731,31 @@
   align-items: center;
 
   border-bottom: 1px solid var(--color-border-soft);
-  padding: 0.8rem 0;
+  padding: 0.75rem 0;
 }
 
 .modalRings .ring {
-  width: 4.4rem;
-  height: 4.4rem;
+  width: 4rem;
+  height: 4rem;
 }
 
 .modalRings .ringInner {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 3.2rem;
+  height: 3.2rem;
 }
 
 .detailsList {
   display: grid;
-  margin-top: 0.4rem;
+  margin-top: 0.35rem;
 }
 
 .detailRow {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
 
   border-bottom: 1px solid var(--color-border-soft);
-  padding: 0.55rem 0;
+  padding: 0.5rem 0;
 }
 
 .detailRow:last-child {
@@ -652,9 +763,11 @@
 }
 
 .detailRow dt {
-  flex: 0 0 42%;
+  flex: 0 0 40%;
+
   color: var(--color-text-subtle);
-  font-size: 0.6rem;
+  font-size: 0.56rem;
+  overflow-wrap: anywhere;
 }
 
 .detailRow dd {
@@ -662,22 +775,24 @@
   margin: 0;
 
   color: var(--color-text-muted);
-  font-size: 0.6rem;
+  font-size: 0.56rem;
   text-align: right;
+
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .modalFooter {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.3rem;
 
   border-top: 1px solid var(--color-border-soft);
-  padding-top: 0.8rem;
+  padding-top: 0.7rem;
 
   color: var(--color-text-subtle);
-  font-size: 0.58rem;
+  font-size: 0.54rem;
 }
 
 .modalFooter strong {
@@ -685,68 +800,185 @@
 }
 
 /* =========================================================
-   MÓVIL
+   TABLET
    ========================================================= */
 
-@media (max-width: 39.99rem) {
+@media (min-width: 40rem) {
   .metricBar {
-    width: max-content;
+    width: min(100%, 48rem);
     min-width: 0;
-    max-width: max-content;
+    max-width: 100%;
+    min-height: 4.9rem;
 
-    min-height: 5.65rem;
-    height: auto;
-
+    display: grid;
     grid-template-columns:
-      max-content
-      max-content
-      max-content;
+      2rem
+      minmax(0, 1fr)
+      2rem;
 
+    align-items: center;
     gap: 0.55rem;
-    padding: 0.6rem 0.65rem;
+
+    padding: 0.55rem 0.65rem;
+
+    overflow: hidden;
+  }
+
+  .sliderButton {
+    display: grid;
+
+    width: 2rem;
+    height: 2rem;
   }
 
   .metricMain {
-    width: max-content;
+    width: 100%;
     min-width: 0;
-    max-width: max-content;
+    max-width: 100%;
 
+    display: grid;
     grid-template-columns:
-      max-content
-      max-content
-      max-content
-      max-content;
+      minmax(7rem, 1fr)
+      3.5rem
+      minmax(0, 1.5fr)
+      minmax(3.5rem, 0.65fr);
 
+    grid-template-areas: none;
+
+    align-items: center;
+    gap: 0.55rem;
+
+    overflow: hidden;
+  }
+
+  .identity,
+  .primaryMetric,
+  .valueGrid,
+  .requestMetric {
+    grid-area: auto;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .valueGrid {
+    grid-template-columns: repeat(
+      3,
+      minmax(2.5rem, 1fr)
+    );
+
+    gap: 0.3rem;
+  }
+
+  .valueItem,
+  .requestMetric {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .valueItem small,
+  .valueItem strong,
+  .requestMetric small,
+  .requestMetric strong {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .modal {
+    padding: 1rem;
+  }
+
+  .modalGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .modalFooter {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* =========================================================
+   ESCRITORIO
+   ========================================================= */
+
+@media (min-width: 64rem) {
+  .metricBar {
+    width: min(100%, 48rem);
+    min-width: 0;
+    max-width: 48rem;
+    min-height: 5.2rem;
+
+    display: grid;
+    grid-template-columns:
+      2.1rem
+      minmax(0, 1fr)
+      2.1rem;
+
+    align-items: center;
     gap: 0.65rem;
+
+    padding: 0.6rem 0.75rem;
+
+    overflow: hidden;
   }
 
-  .identity {
-    width: max-content;
-    min-width: max-content;
-    gap: 0.4rem;
+  .sliderButton {
+    display: grid;
+
+    width: 2.1rem;
+    height: 2.1rem;
   }
+
+  .metricMain {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
+    display: grid;
+    grid-template-columns:
+      minmax(9rem, 1.05fr)
+      3.8rem
+      minmax(0, 1.5fr)
+      minmax(4rem, 0.6fr);
+
+    align-items: center;
+    gap: 0.7rem;
+
+    overflow: hidden;
+  }
+
+  .identity,
+  .identityText,
+  .primaryMetric,
+  .valueGrid,
+  .requestMetric {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  
 
   .logoBox {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.45rem;
+    height: 2.45rem;
   }
 
   .logoBox svg {
-    width: 1.35rem;
-    height: 1.35rem;
-  }
-
-  .identityText {
-    width: max-content;
-    min-width: max-content;
+    width: 1.45rem;
+    height: 1.45rem;
   }
 
   .identityText > strong {
-    font-size: clamp(0.58rem, 2.4vw, 0.72rem);
+    font-size: clamp(0.58rem, 0.8vw, 0.76rem);
   }
 
   .identityText > small {
-    font-size: clamp(0.4rem, 1.8vw, 0.5rem);
+    font-size: clamp(0.4rem, 0.55vw, 0.5rem);
   }
 
   .primaryMetric .ring {
@@ -764,107 +996,56 @@
   }
 
   .valueGrid {
-    width: max-content;
-    min-width: max-content;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
 
-    grid-template-columns: repeat(3, max-content);
-    gap: 0.65rem;
+    display: grid;
+    grid-template-columns: repeat(
+      3,
+      minmax(2.8rem, 1fr)
+    );
+
+    gap: 0.35rem;
   }
 
   .valueItem,
   .requestMetric {
-    width: max-content;
-    min-width: max-content;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
+    gap: 0.1rem;
+    padding-left: 0.35rem;
+
+    overflow: hidden;
+  }
+
+  .valueItem small,
+  .valueItem strong,
+  .requestMetric small,
+  .requestMetric strong {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
+    font-size: clamp(0.38rem, 0.55vw, 0.5rem);
+    line-height: 1.15;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-wrap: balance;
   }
 
   .valueItem small,
   .requestMetric small {
-    font-size: clamp(0.4rem, 1.8vw, 0.5rem);
+    font-size: clamp(0.34rem, 0.48vw, 0.44rem);
   }
 
   .valueItem strong,
   .requestMetric strong {
-    font-size: clamp(0.52rem, 2.2vw, 0.65rem);
-  }
-
-  .sliderButton {
-    width: 1.9rem;
-    height: 1.9rem;
-  }
-
-  .sliderButton svg {
-    width: 0.9rem;
-    height: 0.9rem;
-  }
-
-  .modalBackdrop {
-    padding: 0.75rem;
-  }
-
-  .modal {
-    max-height: 90dvh;
-    border-radius: 1rem;
-    padding: 0.85rem;
-  }
-
-  .modalGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (min-width: 40rem) and (max-width: 63.99rem) {
-  .metricBar {
-    min-height: clamp(5rem, 7vw, 5.8rem);
-  }
-
-  .metricMain {
-    gap: clamp(0.7rem, 1.2vw, 1rem);
-  }
-
-  .valueGrid {
-    grid-template-columns: repeat(3, max-content);
-  }
-
-  .modalGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* =========================================================
-   ESCRITORIO
-   ========================================================= */
-
-@media (min-width: 64rem) {
-  .metricBar {
-    min-height: clamp(5.1rem, 6vw, 6rem);
-  }
-
-  .metricMain {
-    gap: clamp(0.8rem, 1.5vw, 1.5rem);
-  }
-
-  .ring {
-    width: 3.65rem;
-    height: 3.65rem;
-  }
-
-  .ringInner {
-    width: 2.85rem;
-    height: 2.85rem;
-  }
-
-  .modalGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .modalFooter {
-    align-items: center;
-    flex-direction: row;
-    justify-content: space-between;
+    font-size: clamp(0.42rem, 0.58vw, 0.54rem);
   }
 }
 

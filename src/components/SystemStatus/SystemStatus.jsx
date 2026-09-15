@@ -73,18 +73,44 @@ function createValue(label, value) {
   };
 }
 
+/**
+ * Importante:
+ * No basta con comprobar que existan objetos como runtime: {}.
+ * El backend debe haber devuelto al menos una propiedad útil.
+ */
 function hasMetricsData(metrics) {
   if (!metrics || typeof metrics !== "object") {
     return false;
   }
 
+  const runtime = metrics.runtime ?? {};
+  const database = metrics.database ?? {};
+  const cloudflare = metrics.cloudflare ?? {};
+  const cloudflareApi = cloudflare.api ?? {};
+  const render = metrics.render ?? {};
+
   return Boolean(
     metrics.service ||
     metrics.status ||
-    metrics.runtime ||
-    metrics.database ||
-    metrics.cloudflare ||
-    metrics.render,
+    metrics.timestamp ||
+    metrics.request_duration_ms != null ||
+    runtime.php_version ||
+    runtime.laravel_version ||
+    runtime.environment ||
+    runtime.memory_used_mb != null ||
+    database.name ||
+    database.status ||
+    database.driver ||
+    database.latency_ms != null ||
+    cloudflare.colo ||
+    cloudflare.ray_id ||
+    cloudflareApi.name ||
+    cloudflareApi.status ||
+    cloudflareApi.latency_ms != null ||
+    render.name ||
+    render.status ||
+    render.service_id ||
+    render.latency_ms != null,
   );
 }
 
@@ -103,7 +129,6 @@ function ServiceIcon({ type, size = 30 }) {
           d="M46.8 43.5H18.2c-5.2 0-9.4-3.9-9.4-8.8 0-4.7 3.8-8.5 8.6-8.8C19.3 18.7 25.6 14 33 14c8.2 0 14.9 5.7 16.3 13.4.1 0 .3 0 .4 0 5.3 0 9.6 3.6 9.6 8.1s-4.3 8-9.6 8Z"
           fill="currentColor"
         />
-
         <path
           d="M18 43.5h30.5"
           stroke="#081526"
@@ -147,13 +172,11 @@ function ServiceIcon({ type, size = 30 }) {
         fill="none"
       >
         <ellipse cx="32" cy="15" rx="18" ry="8" fill="currentColor" />
-
         <path
           d="M14 15v17c0 4.4 8.1 8 18 8s18-3.6 18-8V15"
           stroke="currentColor"
           strokeWidth="5"
         />
-
         <path
           d="M14 32v17c0 4.4 8.1 8 18 8s18-3.6 18-8V32"
           stroke="currentColor"
@@ -192,7 +215,6 @@ function getMetricSlides(metrics) {
       iconType: "runtime",
       accent: "cyan",
       status: metrics?.status,
-
       primary: {
         label: "Memoria",
         value: memoryPercent,
@@ -202,13 +224,11 @@ function getMetricSlides(metrics) {
             ? `${runtime.memory_used_mb} MB usados`
             : "Sin datos",
       },
-
       values: [
         createValue("PHP", runtime.php_version),
         createValue("Laravel", runtime.laravel_version),
         createValue("Entorno", runtime.environment),
       ],
-
       details: [
         ["Servicio", metrics?.service],
         ["PHP", runtime.php_version],
@@ -245,20 +265,17 @@ function getMetricSlides(metrics) {
       iconType: "database",
       accent: "green",
       status: database.status,
-
       primary: {
         label: "Latencia",
         value: latencyPercent(database.latency_ms),
         display: formatMs(database.latency_ms),
         caption: statusLabel(database.status),
       },
-
       values: [
         createValue("Estado", statusLabel(database.status)),
         createValue("Driver", database.driver),
         createValue("Latencia", formatMs(database.latency_ms)),
       ],
-
       details: [
         ["Servicio", database.name],
         ["Estado", statusLabel(database.status)],
@@ -275,20 +292,17 @@ function getMetricSlides(metrics) {
       iconType: "cloudflare",
       accent: "orange",
       status: cloudflareApi.status,
-
       primary: {
         label: "Latencia",
         value: latencyPercent(cloudflareApi.latency_ms),
         display: formatMs(cloudflareApi.latency_ms),
         caption: statusLabel(cloudflareApi.status),
       },
-
       values: [
         createValue("API", statusLabel(cloudflareApi.status)),
         createValue("Centro", cloudflare.colo),
         createValue("Proxy", cloudflare.proxy_detected ? "Activo" : "No"),
       ],
-
       details: [
         ["Servicio", cloudflareApi.name],
         ["API", statusLabel(cloudflareApi.status)],
@@ -310,20 +324,17 @@ function getMetricSlides(metrics) {
       iconType: "render",
       accent: "purple",
       status: render.status,
-
       primary: {
         label: "Latencia",
         value: latencyPercent(render.latency_ms),
         display: formatMs(render.latency_ms),
         caption: statusLabel(render.status),
       },
-
       values: [
         createValue("Estado", statusLabel(render.status)),
         createValue("Servicio", render.name),
         createValue("Tipo", render.type),
       ],
-
       details: [
         ["Servicio", render.name],
         ["Estado", statusLabel(render.status)],
@@ -353,7 +364,6 @@ function MetricRing({ value, display, label, caption, accent }) {
       </div>
 
       <span className={styles.ringLabel}>{label}</span>
-
       <small className={styles.ringCaption}>{caption}</small>
     </div>
   );
@@ -438,7 +448,8 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     };
   }, [isModalOpen]);
 
-  const displayTime = loading ? elapsed : (responseTime ?? elapsed);
+  const displayTime = isWaitingForServer ? elapsed : (responseTime ?? 0);
+
   const loadingProgress = Math.min(
     92,
     Math.max(6, (displayTime / 45_000) * 100),

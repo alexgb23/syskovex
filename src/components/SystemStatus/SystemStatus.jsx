@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight, Info, MonitorCog, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MonitorCog, X } from "lucide-react";
 
 import styles from "./SystemStatus.module.css";
 
@@ -71,6 +71,21 @@ function createValue(label, value) {
     label,
     value: formatValue(value),
   };
+}
+
+function hasMetricsData(metrics) {
+  if (!metrics || typeof metrics !== "object") {
+    return false;
+  }
+
+  return Boolean(
+    metrics.service ||
+    metrics.status ||
+    metrics.runtime ||
+    metrics.database ||
+    metrics.cloudflare ||
+    metrics.render,
+  );
 }
 
 function ServiceIcon({ type, size = 30 }) {
@@ -357,12 +372,14 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
   const touchStartY = useRef(null);
   const touchStartTime = useRef(null);
 
-  const slides = useMemo(() => getMetricSlides(metrics), [metrics]);
+  const hasData = hasMetricsData(metrics);
+  const isWaitingForServer = loading || !hasData;
 
+  const slides = useMemo(() => getMetricSlides(metrics), [metrics]);
   const currentSlide = slides[activeSlide] ?? slides[0];
 
   useEffect(() => {
-    if (!loading) {
+    if (!isWaitingForServer) {
       setElapsed(0);
       return undefined;
     }
@@ -374,14 +391,14 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     }, 100);
 
     return () => window.clearInterval(interval);
-  }, [loading]);
+  }, [isWaitingForServer]);
 
   useEffect(() => {
     setActiveSlide(0);
   }, [metrics]);
 
   useEffect(() => {
-    if (loading || error || slides.length <= 1 || isModalOpen) {
+    if (isWaitingForServer || slides.length <= 1 || isModalOpen) {
       return undefined;
     }
 
@@ -392,7 +409,7 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     }, 6000);
 
     return () => window.clearInterval(interval);
-  }, [loading, error, slides.length, isModalOpen]);
+  }, [isWaitingForServer, slides.length, isModalOpen]);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -421,7 +438,11 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     };
   }, [isModalOpen]);
 
-  const displayTime = responseTime ?? elapsed;
+  const displayTime = loading ? elapsed : (responseTime ?? elapsed);
+  const loadingProgress = Math.min(
+    92,
+    Math.max(6, (displayTime / 45_000) * 100),
+  );
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -461,7 +482,6 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     }
 
     const touch = event.changedTouches[0];
-
     const deltaX = touch.clientX - touchStartX.current;
     const deltaY = touch.clientY - touchStartY.current;
     const duration = Date.now() - touchStartTime.current;
@@ -577,12 +597,12 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
                 </div>
 
                 <dl className={styles.detailsList}>
-                  {slide.details.map(([label, value]) => (
+                  {slide.details.map(([detailLabel, value]) => (
                     <div
                       className={styles.detailRow}
-                      key={`${slide.id}-${label}`}
+                      key={`${slide.id}-${detailLabel}`}
                     >
-                      <dt>{label}</dt>
+                      <dt>{detailLabel}</dt>
                       <dd>{formatValue(value)}</dd>
                     </div>
                   ))}
@@ -609,7 +629,9 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     );
   };
 
-  if (loading) {
+  if (isWaitingForServer) {
+    const isStarting = displayTime >= 8_000;
+
     return (
       <div
         className={`${styles.container} ${styles.loadingContainer}`}
@@ -620,40 +642,41 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
           <span className={styles.spinner} aria-hidden="true" />
 
           <div className={styles.loadingText}>
-            <strong>Servidor despertando…</strong>
+            <strong>
+              {isStarting
+                ? "Servidor despertando…"
+                : "Conectando con el servidor…"}
+            </strong>
 
-            <span>Render está iniciando el backend. Esperando respuesta.</span>
+            <span>
+              {isStarting
+                ? "Render está iniciando el backend. Los datos aparecerán automáticamente."
+                : "Preparando la consulta del estado del laboratorio."}
+            </span>
           </div>
 
           <span className={styles.loadingTime}>{formatMs(displayTime)}</span>
         </div>
 
-        <div className={styles.progress}>
+        <div
+          className={styles.progress}
+          role="progressbar"
+          aria-label="Esperando respuesta del servidor"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow={Math.round(loadingProgress)}
+        >
           <div
             className={styles.progressBar}
-            style={{
-              width: `${Math.min(100, (displayTime / 10000) * 100)}%`,
-            }}
+            style={{ width: `${loadingProgress}%` }}
           />
         </div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div
-        className={`${styles.container} ${styles.errorContainer}`}
-        role="alert"
-      >
-        <div className={styles.errorHeader}>
-          <Info size={20} strokeWidth={1.8} aria-hidden="true" />
-
-          <div>
-            <strong>API no disponible</strong>
-            <span>{error}</span>
-          </div>
-        </div>
+        <p className={styles.loadingHint}>
+          {error
+            ? "Reintentando conexión con el backend…"
+            : "La página se actualizará en cuanto la API responda."}
+        </p>
       </div>
     );
   }
@@ -735,7 +758,6 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
 
           <div className={styles.requestMetric}>
             <small>REQUEST</small>
-
             <strong>{formatMs(metrics?.request_duration_ms)}</strong>
           </div>
         </button>

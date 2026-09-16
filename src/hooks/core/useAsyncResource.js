@@ -8,31 +8,24 @@ function buildHookErrorMessage(label, error) {
   return `${label}: esperando a que el servidor esté disponible`;
 }
 
-function hasMeaningfulData(value, initialValue) {
+/**
+ * Versión simplificada y más robusta para detectar datos "significativos".
+ * Evita comparaciones complejas contra initialValue que podían fallar en móvil.
+ */
+function hasMeaningfulData(value) {
   if (Array.isArray(value)) {
     return value.length > 0;
   }
 
   if (!value || typeof value !== "object") {
-    return value !== initialValue && value != null && value !== "";
+    return value != null && value !== "";
   }
 
-  const initialObject =
-    initialValue && typeof initialValue === "object" ? initialValue : {};
-
-  return Object.keys(value).some((key) => {
-    const current = value[key];
-    const initial = initialObject[key];
-
-    if (Array.isArray(current)) {
-      return current.length > 0;
-    }
-
-    if (current && typeof current === "object") {
-      return hasMeaningfulData(current, initial);
-    }
-
-    return current != null && current !== "" && current !== initial;
+  // Para objetos: basta con que alguna clave tenga valor no nulo/vacío
+  return Object.values(value).some((v) => {
+    if (Array.isArray(v)) return v.length > 0;
+    if (v && typeof v === "object") return Object.keys(v).length > 0;
+    return v != null && v !== "";
   });
 }
 
@@ -134,7 +127,7 @@ function getSharedRequest(cacheKey, fetcher) {
        * y tu fetcher devuelve null, {} o una respuesta sin contenido,
        * conservamos los últimos datos reales disponibles.
        */
-      if (hasMeaningfulData(data, null)) {
+      if (hasMeaningfulData(data)) {
         setCachedResource(cacheKey, data);
       }
 
@@ -176,6 +169,7 @@ export default function useAsyncResource(
 
   fetcherRef.current = fetcher;
 
+  // ÚNICA decisión sobre caché y estado inicial
   const [state, setState] = useState(() => {
     if (!enabled) {
       return {
@@ -189,7 +183,7 @@ export default function useAsyncResource(
 
     const cachedData = getCachedResource(cacheKey);
 
-    if (hasMeaningfulData(cachedData, initialValue)) {
+    if (hasMeaningfulData(cachedData)) {
       return {
         data: cachedData,
         loading: false,
@@ -232,7 +226,7 @@ export default function useAsyncResource(
       }
 
       setState((previous) => {
-        const hasPreviousData = hasMeaningfulData(previous.data, initialValue);
+        const hasPreviousData = hasMeaningfulData(previous.data);
 
         return {
           ...previous,
@@ -255,9 +249,7 @@ export default function useAsyncResource(
           ? Math.round(performance.now() - requestStartedAtRef.current)
           : null;
 
-        const hasNewData = hasMeaningfulData(data, initialValue);
-
-        if (!hasNewData) {
+        if (!hasMeaningfulData(data)) {
           throw new Error("La API aún no ha devuelto datos de estado");
         }
 
@@ -285,10 +277,7 @@ export default function useAsyncResource(
         );
 
         setState((previous) => {
-          const hasPreviousData = hasMeaningfulData(
-            previous.data,
-            initialValue,
-          );
+          const hasPreviousData = hasMeaningfulData(previous.data);
 
           return {
             ...previous,
@@ -320,32 +309,7 @@ export default function useAsyncResource(
       };
     }
 
-    const cachedData = getCachedResource(cacheKey);
-
-    /*
-     * Si hay caché de una carga anterior:
-     * - Se renderiza instantáneamente.
-     * - loading queda en false, por tanto no aparece la barra.
-     * - isRefreshing queda en true para saber que actualiza en segundo plano.
-     */
-    if (hasMeaningfulData(cachedData, initialValue)) {
-      setState({
-        data: cachedData,
-        loading: false,
-        error: "",
-        isRefreshing: true,
-        responseTime: null,
-      });
-    } else {
-      setState({
-        data: initialValue,
-        loading: true,
-        error: "",
-        isRefreshing: false,
-        responseTime: null,
-      });
-    }
-
+    // Sin segunda comprobación de caché: confiamos en el initializer de useState.
     attemptRef.current = 0;
     void load();
 

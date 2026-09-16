@@ -47,8 +47,11 @@ const STARTUP_RETRY_MS = 3_000;
 const READY_REFRESH_MS = 60_000;
 const MAX_RETRY_DELAY_MS = 15_000;
 
-function getStorageKey(cacheKey) {
-  return `syskovex:resource:${cacheKey}`;
+// TTL de 5 minutos para localStorage
+const LOCAL_STORAGE_TTL_MS = 5 * 60 * 1000;
+
+function getStorageKey(cacheKey, type = "local") {
+  return `syskovex:resource:${type}:${cacheKey}`;
 }
 
 function getSessionResource(cacheKey) {
@@ -57,7 +60,9 @@ function getSessionResource(cacheKey) {
   }
 
   try {
-    const raw = window.sessionStorage.getItem(getStorageKey(cacheKey));
+    const raw = window.sessionStorage.getItem(
+      getStorageKey(cacheKey, "session"),
+    );
 
     if (!raw) {
       return null;
@@ -82,33 +87,88 @@ function setSessionResource(cacheKey, data) {
 
   try {
     window.sessionStorage.setItem(
-      getStorageKey(cacheKey),
+      getStorageKey(cacheKey, "session"),
       JSON.stringify({
         data,
         time: Date.now(),
       }),
     );
   } catch {
-    // Si sessionStorage no está disponible, sigue funcionando con memoria.
+    // Ignorar si sessionStorage no está disponible
+  }
+}
+
+function getLocalResource(cacheKey) {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(getStorageKey(cacheKey, "local"));
+
+    if (!raw) {
+      return null;
+    }
+
+    const cached = JSON.parse(raw);
+
+    if (!cached || typeof cached !== "object" || !cached.data || !cached.time) {
+      return null;
+    }
+
+    const ageMs = Date.now() - cached.time;
+
+    // Si ha pasado más que el TTL, lo ignoramos
+    if (ageMs > LOCAL_STORAGE_TTL_MS) {
+      return null;
+    }
+
+    return cached;
+  } catch {
+    return null;
+  }
+}
+
+function setLocalResource(cacheKey, data) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(
+      getStorageKey(cacheKey, "local"),
+      JSON.stringify({
+        data,
+        time: Date.now(),
+      }),
+    );
+  } catch {
+    // Ignorar si localStorage no está disponible
   }
 }
 
 function getCachedResource(cacheKey) {
+  // 1. Memoria
   const memoryCached = resourceCache.get(cacheKey);
-
   if (memoryCached) {
     return memoryCached.data;
   }
 
-  const sessionCached = getSessionResource(cacheKey);
-
-  if (!sessionCached) {
-    return null;
+  // 2. localStorage (principal para persistencia)
+  const localCached = getLocalResource(cacheKey);
+  if (localCached) {
+    resourceCache.set(cacheKey, localCached);
+    return localCached.data;
   }
 
-  resourceCache.set(cacheKey, sessionCached);
+  // 3. sessionStorage (extra, sin depender de él)
+  const sessionCached = getSessionResource(cacheKey);
+  if (sessionCached) {
+    resourceCache.set(cacheKey, sessionCached);
+    return sessionCached.data;
+  }
 
-  return sessionCached.data;
+  return null;
 }
 
 function setCachedResource(cacheKey, data) {
@@ -117,7 +177,13 @@ function setCachedResource(cacheKey, data) {
     time: Date.now(),
   };
 
+  // Memoria
   resourceCache.set(cacheKey, cached);
+
+  // localStorage como caché principal
+  setLocalResource(cacheKey, data);
+
+  // sessionStorage como extra
   setSessionResource(cacheKey, data);
 }
 
@@ -158,7 +224,7 @@ function getSharedRequest(cacheKey, fetcher) {
  *
  * Características:
  * - Caché en memoria durante la sesión actual.
- * - Caché persistente mediante sessionStorage al recargar.
+ * - Caché persistente mediante localStorage (TTL 5 min) y sessionStorage.
  * - Muestra datos previos mientras actualiza en segundo plano.
  * - Reintentos continuos cuando el backend de Render está suspendido.
  * - Refresco automático cada minuto cuando la API ya responde.

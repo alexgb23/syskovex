@@ -1,3 +1,5 @@
+// src/components/layout/SystemStatus.jsx
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, MonitorCog, X } from "lucide-react";
@@ -74,13 +76,17 @@ function createValue(label, value) {
 }
 
 /**
- * Importante:
- * No basta con comprobar que existan objetos como runtime: {}.
- * El backend debe haber devuelto al menos una propiedad útil.
+ * Versión más robusta y permisiva.
+ * Basta con que haya algún dato “real” en cualquier sección.
  */
 function hasMetricsData(metrics) {
   if (!metrics || typeof metrics !== "object") {
     return false;
+  }
+
+  // Si hay status o service, ya consideramos que hay datos
+  if (metrics.service || metrics.status) {
+    return true;
   }
 
   const runtime = metrics.runtime ?? {};
@@ -89,29 +95,34 @@ function hasMetricsData(metrics) {
   const cloudflareApi = cloudflare.api ?? {};
   const render = metrics.render ?? {};
 
-  return Boolean(
-    metrics.service ||
-    metrics.status ||
-    metrics.timestamp ||
-    metrics.request_duration_ms != null ||
+  // Cualquier campo relevante con valor no nulo cuenta
+  const hasRuntime =
     runtime.php_version ||
     runtime.laravel_version ||
     runtime.environment ||
     runtime.memory_used_mb != null ||
+    runtime.memory_limit;
+
+  const hasDatabase =
     database.name ||
     database.status ||
     database.driver ||
-    database.latency_ms != null ||
+    database.latency_ms != null;
+
+  const hasCloudflare =
     cloudflare.colo ||
     cloudflare.ray_id ||
     cloudflareApi.name ||
     cloudflareApi.status ||
-    cloudflareApi.latency_ms != null ||
+    cloudflareApi.latency_ms != null;
+
+  const hasRender =
     render.name ||
     render.status ||
     render.service_id ||
-    render.latency_ms != null,
-  );
+    render.latency_ms != null;
+
+  return Boolean(hasRuntime || hasDatabase || hasCloudflare || hasRender);
 }
 
 function ServiceIcon({ type, size = 30 }) {
@@ -383,7 +394,11 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
   const touchStartTime = useRef(null);
 
   const hasData = hasMetricsData(metrics);
-  const isWaitingForServer = loading || !hasData;
+
+  // Solo estamos “esperando al servidor” si:
+  // - loading es true Y no hay datos, o
+  // - no hay datos y además hay error (para no mostrar UI vacía).
+  const isWaitingForServer = (loading && !hasData) || (!hasData && error);
 
   const slides = useMemo(() => getMetricSlides(metrics), [metrics]);
   const currentSlide = slides[activeSlide] ?? slides[0];
@@ -640,6 +655,7 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     );
   };
 
+  // Solo mostramos UI de “esperando” si realmente no hay datos
   if (isWaitingForServer) {
     const isStarting = displayTime >= 8_000;
 
@@ -692,6 +708,7 @@ function SystemStatus({ loading, error, responseTime, metrics }) {
     );
   }
 
+  // Si no hay slide válido, no renderizamos nada
   if (!currentSlide) {
     return null;
   }

@@ -47,6 +47,9 @@ function Footer({ className = "" }) {
   const hasLinks = filteredLinks.length > 0;
   const showPlaceholders = socialLoading && !hasLinks;
 
+  // Solo mostramos error si no hay enlaces y hay error
+  const showError = !socialLoading && socialError && !hasLinks;
+
   return (
     <footer className={`${styles.footer} ${className}`}>
       <div className={styles.metrics}>
@@ -125,7 +128,7 @@ function Footer({ className = "" }) {
           })
         )}
 
-        {!socialLoading && socialError && (
+        {showError && (
           <span className={styles.error}>Redes no disponibles</span>
         )}
       </nav>

@@ -9,22 +9,33 @@ function buildHookErrorMessage(label, error) {
 }
 
 /**
- * Versión simplificada y más robusta para detectar datos "significativos".
- * Evita comparaciones complejas contra initialValue que podían fallar en móvil.
+ * Versión adaptada a métricas del sistema.
+ * Considera "significativos" ciertos campos clave aunque otros estén vacíos.
  */
 function hasMeaningfulData(value) {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  // Campos que, si existen, ya consideramos que hay datos útiles
+  if (value.status) return true;
+  if (value.service) return true;
+  if (value.timestamp) return true;
+  if (value.request_duration_ms != null) return true;
+
+  // Para arrays, requerimos al menos un elemento
   if (Array.isArray(value)) {
     return value.length > 0;
   }
 
-  if (!value || typeof value !== "object") {
-    return value != null && value !== "";
-  }
-
-  // Para objetos: basta con que alguna clave tenga valor no nulo/vacío
+  // Para objetos anidados (social_links, etc.), basta con algún valor no nulo
   return Object.values(value).some((v) => {
     if (Array.isArray(v)) return v.length > 0;
-    if (v && typeof v === "object") return Object.keys(v).length > 0;
+    if (v && typeof v === "object") {
+      // En objetos anidados, también miramos status/service/timestamp si existen
+      if (v.status || v.service || v.timestamp) return true;
+      return Object.keys(v).length > 0;
+    }
     return v != null && v !== "";
   });
 }

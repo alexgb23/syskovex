@@ -45,7 +45,7 @@ const pendingRequests = new Map();
 
 const STARTUP_RETRY_MS = 3_000;
 const READY_REFRESH_MS = 60_000;
-const MAX_RETRY_DELAY_MS = 15_000;
+const MAX_RETRY_DELAY_MS = 60_000; 
 
 // TTL de 5 minutos para localStorage
 const LOCAL_STORAGE_TTL_MS = 5 * 60 * 1000;
